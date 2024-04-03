@@ -3,7 +3,6 @@ const { db } = require('@vercel/postgres');
 async function seedConsumers(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-    // Create the "users" table if it doesn't exist
     const createTable = await client.sql`
       CREATE TABLE IF NOT EXISTS consumers (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -28,7 +27,6 @@ async function seedConsumers(client) {
 async function seedProviders(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-    // Create the "users" table if it doesn't exist
     const createTable = await client.sql`
       CREATE TABLE IF NOT EXISTS providers (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -62,9 +60,10 @@ async function seedRequests(client) {
     const createTable = await client.sql`
       CREATE TABLE IF NOT EXISTS requests (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-        consumerId UUID NOT NULL,
-        providerId UUID NOT NULL,
-        providerName VARCHAR(255) NOT NULL,
+        consumerid UUID NOT NULL,
+        consumername VARCHAR(255) NOT NULL,
+        providerid UUID NOT NULL,
+        providername VARCHAR(255) NOT NULL,
         description TEXT NOT NULL,
         status VARCHAR(255) NOT NULL,
         date DATE NOT NULL

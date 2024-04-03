@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import NavLinks from '@/app/ui/dashboard/sidenav/nav-links';
-import { PowerIcon } from '@heroicons/react/24/outline';
 
-import { signOut } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { performSignOut } from '@/app/lib/actions';
 

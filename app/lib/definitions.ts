@@ -28,7 +28,8 @@ export type Provider = {
 
 export type Request = {
   id: string;
-  consumerId: string;
+  consumerid: string;
+  consumername: string;
   providerid: string;
   providername: string;
   description: string;

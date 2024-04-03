@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
-export async function Form({ consumerId, providerId, providerName }: { consumerId: string | undefined, providerId: string, providerName: string }) {
+export async function Form({ consumerId, consumername, providerId, providerName }: { consumerId: string | undefined, providerId: string, providerName: string, consumername: string | undefined }) {
 
   return (
     <Dialog>
@@ -32,6 +32,16 @@ export async function Form({ consumerId, providerId, providerName }: { consumerI
               Create a request to connect with this provider
             </DialogDescription>
           </DialogHeader>
+          <Input
+            className="hidden"
+            type="text"
+            name="consumernaeme"
+            id="consumernaeme"
+            value={consumername}
+            hidden={true}
+            readOnly
+          />
+
           <Input
             className="hidden"
             type="text"

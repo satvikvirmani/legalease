@@ -1,6 +1,5 @@
 import { fetchConsumerRequests } from '@/app/lib/data';
 import { auth } from '@/auth';
-import { Badge } from '@/components/ui/badge';
 
 import {
   Card,
@@ -13,7 +12,7 @@ import {
 
 export default async function Page() {
   const session = await auth();
-  const requests = await fetchConsumerRequests(session?.user?.id, 'pending');
+  const requests = await fetchConsumerRequests(session?.user?.id, 'accepted');
 
   return (
     <>
@@ -33,9 +32,7 @@ export default async function Page() {
                 <CardContent>
                   <p>{request.description}</p>
                 </CardContent>
-                <CardFooter>
-                  <Badge>Pending</Badge>
-                </CardFooter>
+                <CardFooter></CardFooter>
               </Card>
             );
           })}

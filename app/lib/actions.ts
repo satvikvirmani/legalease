@@ -3,54 +3,52 @@
 import { z } from 'zod';
 
 import { sql } from '@vercel/postgres';
+
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { signIn, signOut } from '@/auth';
 import { AuthError } from 'next-auth';
+
 import bcrypt from 'bcrypt';
 
 const FormSchema = z.object({
   id: z.string(),
-  consumerId: z.string(),
-  providerId: z.string(),
-  providerName: z.string(),
+  consumerid: z.string(),
+  consumername: z.string(),
+  providerid: z.string(),
+  providername: z.string(),
   description: z.string(),
 });
 
 const CreateRequest = FormSchema.omit({ id: true });
 
 export async function createRequest(formData: FormData) {
-  const { consumerId, providerId, providerName, description } =
+  const { consumerid, consumername, providerid, providername, description } =
     CreateRequest.parse({
-      consumerId: formData.get('consumerId'),
-      providerId: formData.get('providerId'),
-      providerName: formData.get('providerName'),
+      consumerid: formData.get('consumerId'),
+      consumername: formData.get('consumername'),
+      providerid: formData.get('providerId'),
+      providername: formData.get('providerName'),
       description: formData.get('description'),
     });
 
   const date = new Date().toISOString().split('T')[0];
 
   await sql`
-    INSERT INTO requests (consumerId, providerId, providerName, description, status, date)
-    VALUES (${consumerId}, ${providerId}, ${providerName}, ${description}, ${'pending'}, ${date})
+    INSERT INTO requests (consumerid, consumername, providerid, providername, description, status, date)
+    VALUES (${consumerid}, ${consumername}, ${providerid}, ${providername}, ${description}, ${'pending'}, ${date})
   `;
 
   revalidatePath('/dashboard/pending');
   redirect('/dashboard/pending');
 }
 export async function performSignOut() {
-  'use server';
   await signOut();
 }
 
-export async function authenticateSignIn(
-  prevState: string | undefined,
-  formData: FormData,
-) {
+export async function authenticateSignIn(formData: FormData) {
   try {
-    console.log(formData);
-
     await signIn('credentials', formData);
   } catch (error) {
     if (error instanceof AuthError) {
@@ -61,7 +59,6 @@ export async function authenticateSignIn(
           return 'Something went wrong.';
       }
     }
-    throw error;
   }
 }
 
@@ -112,7 +109,7 @@ const FormSchemaProviderSignUp = z.object({
   phone: z.string(),
   title: z.string(),
   age: z.string(),
-  interestedDomains: z.string(),
+  interesteddomains: z.string(),
   expertise: z.string(),
   description: z.string(),
   password: z.string(),
@@ -127,7 +124,7 @@ export async function authenticateProviderSignUp(formData: FormData) {
     phone,
     title,
     age,
-    interestedDomains,
+    interesteddomains,
     expertise,
     description,
     password,
@@ -147,7 +144,7 @@ export async function authenticateProviderSignUp(formData: FormData) {
 
   await sql`
   INSERT INTO providers (name, email, phone, title, age, interestedDomains, expertise, description, typeofuser, password)
-  VALUES (${name}, ${email}, ${phone.toString()}, ${title}, ${parseInt(age)}, ${interestedDomains}, ${expertise}, ${description}, ${'provider'}, ${hashedPassword})
+  VALUES (${name}, ${email}, ${phone.toString()}, ${title}, ${parseInt(age)}, ${interesteddomains}, ${expertise}, ${description}, ${'provider'}, ${hashedPassword})
 `;
 
   revalidatePath('/login');

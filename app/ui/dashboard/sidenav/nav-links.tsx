@@ -12,8 +12,8 @@ const consumerLinks = [
     href: '/dashboard/pending',
   },
   {
-    name: 'Completed Requests',
-    href: '/dashboard/history',
+    name: 'Accepted Requests',
+    href: '/dashboard/accepted',
   },
 ];
 
@@ -27,8 +27,6 @@ const providerLinks = [
 
 export default function NavLinks({ typeofuser }: { typeofuser: string }) {
   const pathName = usePathname();
-
-  console.log("in nav-links",typeofuser);
 
   return (
     <>
