@@ -95,7 +95,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <div className="h-3.5 w-3.5 rounded-full bg-blue-600"></div>
                           </div>
                           <div className="w-11/12">
-                            <p className="text-sm">Profile informations changed.</p>
+                            <p className="text-sm">Request from Alice</p>
                             <p className="text-xs text-gray-500">3 min ago</p>
                           </div>
                         </div>
@@ -104,14 +104,8 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <div className="h-3.5 w-3.5 rounded-full bg-blue-600"></div>
                           </div>
                           <div className="w-11/12">
-                            <p className="text-sm">
-                              Connected with{' '}
-                              <a href="#" className="font-bold text-blue-600">
-                                Colby Covington
-                              </a>
-                              .
-                            </p>
-                            <p className="text-xs text-gray-500">15 min ago</p>
+                          <p className="text-sm">Request from Bob</p>
+                            <p className="text-xs text-gray-500">1 day ago</p>
                           </div>
                         </div>
                         <div className="my-6 -ml-1.5 flex w-full items-center">
@@ -119,14 +113,8 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <div className="h-3.5 w-3.5 rounded-full bg-blue-600"></div>
                           </div>
                           <div className="w-11/12">
-                            <p className="text-sm">
-                              Invoice{' '}
-                              <a href="#" className="font-bold text-blue-600">
-                                #4563
-                              </a>{' '}
-                              was created.
-                            </p>
-                            <p className="text-xs text-gray-500">57 min ago</p>
+                          <p className="text-sm">Request from Mark</p>
+                            <p className="text-xs text-gray-500">1 day ago</p>
                           </div>
                         </div>
                         <div className="my-6 -ml-1.5 flex w-full items-center">
@@ -134,14 +122,8 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <div className="h-3.5 w-3.5 rounded-full bg-blue-600"></div>
                           </div>
                           <div className="w-11/12">
-                            <p className="text-sm">
-                              Message received from{' '}
-                              <a href="#" className="font-bold text-blue-600">
-                                Cecilia Hendric
-                              </a>
-                              .
-                            </p>
-                            <p className="text-xs text-gray-500">1 hour ago</p>
+                          <p className="text-sm">Request from John</p>
+                            <p className="text-xs text-gray-500">2 days ago</p>
                           </div>
                         </div>
                         <div className="my-6 -ml-1.5 flex w-full items-center">
@@ -149,29 +131,13 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <div className="h-3.5 w-3.5 rounded-full bg-blue-600"></div>
                           </div>
                           <div className="w-11/12">
-                            <p className="text-sm">
-                              New order received{' '}
-                              <a href="#" className="font-bold text-blue-600">
-                                #OR9653
-                              </a>
-                              .
-                            </p>
-                            <p className="text-xs text-gray-500">2 hours ago</p>
+                          <p className="text-sm">Request from Jacob</p>
+                            <p className="text-xs text-gray-500">3 days ago</p>
                           </div>
                         </div>
                         <div className="my-6 -ml-1.5 flex w-full items-center">
                           <div className="z-10 w-1/12">
                             <div className="h-3.5 w-3.5 rounded-full bg-blue-600"></div>
-                          </div>
-                          <div className="w-11/12">
-                            <p className="text-sm">
-                              Message received from{' '}
-                              <a href="#" className="font-bold text-blue-600">
-                                Jane Stillman
-                              </a>
-                              .
-                            </p>
-                            <p className="text-xs text-gray-500">2 hours ago</p>
                           </div>
                         </div>
                       </div>
