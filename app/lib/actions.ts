@@ -47,7 +47,10 @@ export async function performSignOut() {
   await signOut();
 }
 
-export async function authenticateSignIn(formData: FormData) {
+export async function authenticateSignIn(
+  prevState: string | undefined,
+  formData: FormData,
+) {
   try {
     await signIn('credentials', formData);
   } catch (error) {
@@ -134,7 +137,7 @@ export async function authenticateProviderSignUp(formData: FormData) {
     password: formData.get('password'),
     title: formData.get('title'),
     age: formData.get('age'),
-    interestedDomains: formData.get('interestedDomains'),
+    interesteddomains: formData.get('interesteddomains'),
     expertise: formData.get('expertise'),
     phone: formData.get('phone'),
     description: formData.get('description'),

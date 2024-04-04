@@ -37,11 +37,11 @@ export default function LoginForm() {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
-    console.log(userType);
+    const formData = new FormData(event.target); 
     formData.append('userType', userType);
     dispatch(formData);
   };
+
   return (
     <div className="grid min-h-screen w-full place-items-center">
       <form onSubmit={handleSubmit} className="space-y-3">

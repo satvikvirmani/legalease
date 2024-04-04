@@ -34,7 +34,7 @@ export default async function Page() {
                 <CardContent>
                   <p>{request.description}</p>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className='flex flex-row justify-between'>
                 <AcceptButton action={acceptRequest(request.id)} />
                   <Badge>Pending</Badge>
                 </CardFooter>

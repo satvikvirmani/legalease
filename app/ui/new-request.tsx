@@ -35,8 +35,8 @@ export async function Form({ consumerId, consumername, providerId, providerName 
           <Input
             className="hidden"
             type="text"
-            name="consumernaeme"
-            id="consumernaeme"
+            name="consumername"
+            id="consumername"
             value={consumername}
             hidden={true}
             readOnly

@@ -35,8 +35,8 @@ export default function ProviderRegisterForm() {
               <Input type="text" placeholder="Title" name="title" />
               <Input type="number" placeholder="Age" name="age" />
               <Textarea
-                name="interestedDomains"
-                id="interestedDomains"
+                name="interesteddomains"
+                id="interesteddomains"
                 cols={30}
                 rows={4}
                 placeholder='Interested Domains'

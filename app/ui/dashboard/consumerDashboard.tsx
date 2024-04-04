@@ -13,7 +13,7 @@ const ConsumerDashboard = ({query}: {query: string}) => {
           Dashboard
         </h1>
         <Search placeholder="Search" />
-        <div className="my-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="my-4 grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
           <Suspense fallback={<ProvidersSkeleton />}>
             <Providers query={query} />
           </Suspense>

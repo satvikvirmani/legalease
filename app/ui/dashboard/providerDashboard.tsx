@@ -1,5 +1,6 @@
 import { fetchProviderRequests } from '@/app/lib/data';
 import { auth } from '@/auth';
+import { Badge } from '@/components/ui/badge';
 
 import {
   Card,
@@ -22,15 +23,14 @@ export default async function ProviderDashboard() {
           return (
             <Card key={i}>
               <CardHeader>
-                <CardTitle><p>{request.providername}</p></CardTitle>
+                <CardTitle><p>{request.consumername}</p></CardTitle>
                 <CardDescription>{request.date.toLocaleDateString('en-us')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <p>{request.description}</p>
               </CardContent>
               <CardFooter>
-                <p>{request.status}</p>
-                <p>{request.providerid}</p>
+                <Badge>{request.status}</Badge>
               </CardFooter>
             </Card>
           )

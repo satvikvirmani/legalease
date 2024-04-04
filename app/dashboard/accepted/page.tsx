@@ -1,5 +1,6 @@
 import { fetchConsumerRequests } from '@/app/lib/data';
 import { auth } from '@/auth';
+import { Badge } from '@/components/ui/badge';
 
 import {
   Card,
@@ -32,7 +33,9 @@ export default async function Page() {
                 <CardContent>
                   <p>{request.description}</p>
                 </CardContent>
-                <CardFooter></CardFooter>
+                <CardFooter>
+                  <Badge>{request.status}</Badge>
+                </CardFooter>
               </Card>
             );
           })}

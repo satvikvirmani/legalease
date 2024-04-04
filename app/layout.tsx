@@ -18,15 +18,17 @@ export default function NextAuthProvider({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>LegalEase</title>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased p-0',
+          'min-h-screen bg-background p-0 font-sans antialiased',
           fontSans.variable,
         )}
       >
-        <StyledComponentsRegistry>
-          {children}
-        </StyledComponentsRegistry>
+        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
         <Toaster />
       </body>
     </html>
