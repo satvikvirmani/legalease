@@ -62,6 +62,7 @@ export default function LoginForm() {
                 </SelectContent>
               </Select>
               <Input type="email" placeholder="E-Mail" name="email" />
+              {/* <Input type="password" placeholder="Password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required /> */}
               <Input type="password" placeholder="Password" name="password" />
               {errorMessage !== undefined ? (
                 <AlertDestructive msg={errorMessage} />
