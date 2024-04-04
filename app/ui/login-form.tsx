@@ -73,7 +73,7 @@ export default function LoginForm() {
           <CardFooter className="flex flex-col items-start gap-2">
             <LoginButton />
             <p className="text-sm text-muted-foreground">
-              Don't have an account,
+              Don&apos;t have an account,
               <Link href={'/register'} className="text-black">
                 Register Now
               </Link>
