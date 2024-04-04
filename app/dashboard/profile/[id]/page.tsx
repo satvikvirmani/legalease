@@ -135,11 +135,6 @@ export default async function Page({ params }: { params: { id: string } }) {
                             <p className="text-xs text-gray-500">3 days ago</p>
                           </div>
                         </div>
-                        <div className="my-6 -ml-1.5 flex w-full items-center">
-                          <div className="z-10 w-1/12">
-                            <div className="h-3.5 w-3.5 rounded-full bg-blue-600"></div>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </div>
