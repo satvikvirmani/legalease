@@ -9,7 +9,7 @@ export default async function Page({
     query?: string;
   };
 }) {
-  const session = await auth();
+  const session: any = await auth();
 
   const query = searchParams?.query || '';
 

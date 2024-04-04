@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 
 export default async function Page() {
-  const session = await auth();
+  const session: any = await auth();
   const requests = await fetchProviderRequests(session?.user?.id, 'pending');
 
   return (

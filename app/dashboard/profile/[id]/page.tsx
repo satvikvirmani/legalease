@@ -4,7 +4,7 @@ import { auth } from '@/auth';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const provider = await fetchProvider(params.id);
-  const session = await auth();
+  const session: any = await auth();
 
   return (
     <>
