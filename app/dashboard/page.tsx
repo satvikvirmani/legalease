@@ -1,25 +1,20 @@
-import { auth } from '@/auth';
-import ConsumerDashboard from '../ui/dashboard/consumerDashboard';
-import ProviderDashboard from '../ui/dashboard/providerDashboard';
+"use client"
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams?: {
-    query?: string;
-  };
-}) {
-  const session: any = await auth();
+import { userContext } from "@/app/dashboard/user-context";
+import { useContext } from "react";
+import ClientHome from "@/app/dashboard/client-home/client-home";
+import ProviderHome from "@/app/dashboard/provider-home/provider-home";
 
-  const query = searchParams?.query || '';
+export default function Home() {
+    const user = useContext(userContext);
 
-  return (
-    <>
-      {session?.user?.typeofuser == 'consumer' ? (
-        <ConsumerDashboard query={query} />
-      ) : (
-        <ProviderDashboard />
-      )}
-    </>
-  );
+    if(!user) {return <div>Loading...</div>}
+
+    return (
+        <main>
+            {
+                user.user_metadata.role == "client" ? <ClientHome /> : <ProviderHome user={user} />
+            }
+        </main>
+    )
 }
