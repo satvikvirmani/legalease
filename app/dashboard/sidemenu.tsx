@@ -3,8 +3,7 @@
 import { User } from "@supabase/supabase-js";
 import { usePathname } from "next/navigation";
 import { HomeIcon, CheckBadgeIcon, InboxIcon, ArchiveBoxXMarkIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
-import { Button, Link } from "@heroui/react";
+import { Button, Link, Avatar, Tooltip } from "@heroui/react";
 
 const SideMenu = ({ user }: { user: User | null }) => {
     const pathname = usePathname();
@@ -16,12 +15,14 @@ const SideMenu = ({ user }: { user: User | null }) => {
     ];
 
     return (
-        <div className="flex h-screen w-16 flex-col justify-between border-e bg-white">
+        <div className="flex h-screen w-16 flex-col justify-between border bg-white">
             <div>
                 <Link href="/dashboard/account">
                     <div className="inline-flex size-16 items-center justify-center">
-                        <span className={clsx("grid size-10 place-content-center rounded-lg text-xs text-gray-600 bg-gray-100", pathname == "/dashboard/account" && "ring-2 ring-offset-2")}>
-                            {user?.email?.[0]?.toUpperCase() || ''}
+                        <span className="grid size-10 place-content-center">
+                        <Tooltip content="Account" placement="right" >
+                            {user && <Avatar isBordered radius="sm" src={user.user_metadata.avatar_url} color={pathname == "/dashboard/account" ? "primary" : "default"} showFallback/>}
+                        </Tooltip>
                         </span>
                     </div>
                 </Link>
@@ -29,6 +30,7 @@ const SideMenu = ({ user }: { user: User | null }) => {
                 <div className="border-t border-gray-100">
                     <div className="px-2">
                         <div className="py-4">
+                        <Tooltip content="Dashboard" placement="right" >
                             <Button
                                 isIconOnly
                                 as={Link}
@@ -38,12 +40,14 @@ const SideMenu = ({ user }: { user: User | null }) => {
                             >
                                 <HomeIcon className="size-5 opacity-75" stroke="currentColor" strokeWidth="2" />
                             </Button>
+                        </Tooltip>
                         </div>
 
                         <ul className="space-y-1 border-t border-gray-100 pt-4">
                             {
                                 menuItems.map((item, index) => (
                                     <li key={index}>
+                                    <Tooltip content={item.label} placement="right" >
                                         <Button
                                             isIconOnly
                                             as={Link}
@@ -53,6 +57,7 @@ const SideMenu = ({ user }: { user: User | null }) => {
                                         >
                                             <item.icon className="size-5 opacity-75" stroke="currentColor" strokeWidth="2" />
                                         </Button>
+                                    </Tooltip>
                                     </li>
                                 ))
                             }
@@ -63,6 +68,7 @@ const SideMenu = ({ user }: { user: User | null }) => {
 
             <div className="sticky inset-x-0 bottom-0 border-t border-gray-100 bg-white p-2">
                 <form action="/auth/signout" method="post">
+                <Tooltip content="Sign Out" placement="right" >
                     <Button
                         isIconOnly
                         type="submit"
@@ -89,6 +95,7 @@ const SideMenu = ({ user }: { user: User | null }) => {
                             Logout
                         </span>
                     </Button>
+                </Tooltip>
                 </form>
             </div>
         </div>

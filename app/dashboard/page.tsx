@@ -11,7 +11,7 @@ export default function Home() {
     if(!user) {return <div>Loading...</div>}
 
     return (
-        <main>
+        <main className="w-full min-h-screen">
             {
                 user.user_metadata.role == "client" ? <ClientHome /> : <ProviderHome user={user} />
             }

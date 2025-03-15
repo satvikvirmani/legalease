@@ -93,6 +93,7 @@ const AddressDetails = ({ user }: { user: User | null }) => {
             validationErrors={errors}
             onSubmit={onSubmit}
         >
+        <h1 className="mb-8 text-2xl">Address Details</h1>
             <div className='w-full grid grid-cols-2 gap-8'>
                 <Textarea
                     value={address?.street}

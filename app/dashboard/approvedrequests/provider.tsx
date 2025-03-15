@@ -95,8 +95,8 @@ const ProviderRequests = ({ user }: { user: User }) => {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl mb-8 ml-6">Approved Requests</h1>
+    <div className="w-full">
+      <h1 className="text-2xl mb-8">Approved Requests</h1>
       {requests.length > 0 ? (
         <div className="space-y-4">
           {requests.map((request) => (

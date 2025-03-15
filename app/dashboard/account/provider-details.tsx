@@ -131,6 +131,7 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
             validationErrors={errors}
             onSubmit={onSubmit}
         >
+            <h1 className="mb-8 text-2xl">Provider Details</h1>
             <div className='w-full grid grid-cols-2 gap-8 gap-y-8'>
                 <Input
                     value={providerDetails?.service_type || ''}
@@ -138,9 +139,7 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                     isRequired
                     isDisabled={isLoading}
                     label="Service Type"
-                    // labelPlacement="outside"
                     name="service_type"
-                    // placeholder="Service Type Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -151,9 +150,7 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                     isRequired
                     isDisabled={isLoading}
                     label="Specialization"
-                    // labelPlacement="outside"
                     name="specialization"
-                    // placeholder="Specialization Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -165,9 +162,7 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                     isRequired
                     isDisabled={isLoading}
                     label="Experience"
-                    // labelPlacement="outside"
                     name="experience_years"
-                    // placeholder="Enter your years of experience"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -178,9 +173,7 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                     isRequired
                     isDisabled={isLoading}
                     label="Certifications"
-                    // labelPlacement="outside"
                     name="certifications"
-                    // placeholder="Certifications Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -191,9 +184,7 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                     isRequired
                     isDisabled={isLoading}
                     label="License Number"
-                    // labelPlacement="outside"
                     name="license_number"
-                    // placeholder="License Number Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -218,7 +209,6 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                             </Checkbox>
                             <Input
                                 size='sm'
-                                // placeholder="Time (e.g., 9am - 5pm)"
                                 value={availability.find((a) => a.day === day)?.time || ""}
                                 onValueChange={(value) => updateAvailability(day, value)}
                                 isDisabled={!availability.some((a) => a.day === day)}
@@ -234,7 +224,6 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                     {socialLinks.map((link, index) => (
                         <div key={index} className="flex items-center gap-4 mt-4">
                             <Input
-                                // placeholder="Platform (e.g., LinkedIn, Twitter)"
                                 value={link.platform}
                                 onChange={(e) =>
                                     setSocialLinks((prev) =>
@@ -248,7 +237,6 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                                 radius='md'
                             />
                             <Input
-                                // placeholder="URL (e.g., https://linkedin.com/in/username)"
                                 value={link.url}
                                 onChange={(e) =>
                                     setSocialLinks((prev) =>
@@ -288,8 +276,6 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                     onValueChange={(value) => setProviderDetails({ ...providerDetails, description: value })}
                     isRequired
                     label="Description Address"
-                    // labelPlacement="outside"
-                    // placeholder="Enter your Description address"
                     name='description'
                     className='w-full col-span-2'
                     description="Describe your services in atleast 100 words. This is most important your profile visibility and outreach depends on this."

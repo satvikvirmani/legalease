@@ -27,7 +27,6 @@ export default function HomeLayout({
     }, [supabase]);
 
     if(!user) {return <div>Loading...</div>}
-    console.log(user);
 
     return (
         <userContext.Provider value={user}>

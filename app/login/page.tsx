@@ -1,12 +1,14 @@
 "use client"
 
-import { Form, Button } from "@heroui/react";
-import { Link } from "lucide-react";
-import { Input } from "@heroui/react";
-import { useState } from "react";
-import { EyeSlashFilledIcon, EyeFilledIcon } from "../register/page";
-import { login } from "./login-action";
+import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
+import { Form, Button, Input } from "@heroui/react";
 import { addToast } from "@heroui/toast";
+
+import Link from "next/link";
+
+import { login } from "@/app/login/login-action";
+
+import { useState } from "react";
 
 export default function Home() {
     const [isLoading, setIsLoading] = useState(false);
@@ -21,10 +23,10 @@ export default function Home() {
         const data = new FormData(e.currentTarget);
         const result = await login(data);
 
-        if (result?.error) {
+        if (result.error) {
             addToast({
                 title: "Notification",
-                description: result?.error || "An unexpected error occurred",
+                description: result.error || "An unexpected error occurred",
                 color: "danger",
                 variant: "bordered",
                 radius: "md"
@@ -43,11 +45,11 @@ export default function Home() {
             </div>
             <div className="col-span-2 lg:col-span-1 flex flex-col justify-between items-center">
                 <div>
-                    <h1 className="font-semibold text-lg">LegalEase</h1>
+                    <h1 className="text-lg">LegalEase</h1>
                 </div>
                 <Form className="w-full" validationBehavior="native" onSubmit={onSubmit}>
                     <div className="mx-auto">
-                        <h1 className={`mb-2 text-center text-5xl font-light`}>Welcome Back</h1>
+                        <h1 className={`mb-2 text-center text-5xl`}>Welcome Back</h1>
                         <h2 className="mb-16 text-center">Enter your email and password to access your account</h2>
                     </div>
                     <div className="w-full max-w-sm flex flex-col items-start gap-8 mx-auto">
@@ -57,9 +59,7 @@ export default function Home() {
                                 validationDetails.typeMismatch ? "Please enter a valid email address" : validationErrors
                             }
                             label="Email"
-                            // labelPlacement="outside"
                             name="email"
-                            // placeholder="Enter your email"
                             type="email"
                             variant="bordered"
                             radius="md"
@@ -74,31 +74,29 @@ export default function Home() {
                                     onClick={toggleVisibility}
                                 >
                                     {isVisible ? (
-                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                        <EyeSlashIcon className="w-6 h-6 pointer-events-none" />
                                     ) : (
-                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                        <EyeIcon className="w-6 h-6 pointer-events-none" />
                                     )}
                                 </button>
                             }
                             name="password"
                             label="Password"
-                            // labelPlacement="outside"
                             validate={(value) => value.length >= 8 || "Password must be at least 8 characters long"}
-                            // placeholder="Enter your password"
                             type={isVisible ? "text" : "password"}
                             variant="bordered"
                             radius="md"
                         />
-                        <Button type="submit" isLoading={isLoading} variant="shadow" radius="md" size="md" className="w-full bg-gray-900 text-gray-100">
+                        <Button color="primary" type="submit" isLoading={isLoading} variant="shadow" radius="md" size="md" className="w-full">
                             Submit
                         </Button>
                     </div>
                 </Form>
-                <p className="text-base text-gray-600">
-                    Don't have an account?{" "}
-                    <a className="text-base text-gray-800 underline" href="/register">
-                        Sign Up
-                    </a>
+                <p className="text-sm">
+                    <span className="text-neutral-600">Don't have an account?{" "}</span>
+                    <Link className="underline" href="/register" passHref>
+                        Sign Up In
+                    </Link>
                 </p>
             </div>
         </main>

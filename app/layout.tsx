@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/app/providers";
-import { Noto_Sans } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 
-const NotoSans = Noto_Sans({
+const poppins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"]
 })
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className='light'>
-      <body className={`${NotoSans.className} antialiased text-gray-800`}>
+      <body className={`${poppins.className} antialiased text-neutral-800`}>
         <Providers>
           {children}
         </Providers>

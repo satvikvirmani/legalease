@@ -95,6 +95,14 @@ const BasicDetails = ({ user }: { user: User | null }) => {
                 profile_picture: imageURL,
             });
 
+
+            const { data, error: updateError } = await supabase.auth.updateUser({
+                data: { avatar_url: imageURL }
+            })
+
+            console.log("AT BASIC", data)
+            
+
             if (error) throw error;
 
             addToast({
@@ -120,6 +128,7 @@ const BasicDetails = ({ user }: { user: User | null }) => {
             validationErrors={errors}
             onSubmit={onSubmit}
         >
+            <h1 className="mb-8 text-2xl">Basic Details</h1>
             <div className='w-full grid grid-cols-2 gap-8'>
                 <div className='w-full col-span-2'>
                     {
