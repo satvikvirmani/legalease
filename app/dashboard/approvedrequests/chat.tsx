@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/app/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Card, Divider, Chip, Input, Button } from "@heroui/react";
+import {addToast} from "@heroui/toast";
 
 type Message = {
     id: string;
@@ -29,20 +30,35 @@ const Chat = ({
     const supabase = createClient();
 
     const fetchMessages = async () => {
-        try {
-            setLoading(true);
+        setLoading(true);
 
+        try {
             const { data, error } = await supabase
                 .from("messages")
                 .select("*")
                 .eq("request_id", requestId)
                 .order("created_at", { ascending: true });
 
-            if (error) throw error;
+            if (error) {
+                addToast({
+                    title: "Error",
+                    description: error.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md",
+                });
+            }
 
             setMessages(data || []);
         } catch (error) {
             console.error("Error fetching messages:", error);
+            addToast({
+                title: "Error",
+                description: "Failed to fetch requests. Please try again.",
+                color: "danger",
+                variant: "bordered",
+                radius: "md",
+            });
         } finally {
             setLoading(false);
         }
@@ -79,21 +95,36 @@ const Chat = ({
                 },
             ]);
 
-            if (error) throw error;
+            if (error) {
+                addToast({
+                    title: "Error",
+                    description: error.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md",
+                });
+            }
 
             setNewMessage("");
         } catch (error) {
             console.error("Error sending message:", error);
+            addToast({
+                title: "Error",
+                description: "Failed to fetch requests. Please try again.",
+                color: "danger",
+                variant: "bordered",
+                radius: "md",
+            });
         }
     };
 
     useEffect(() => {
-        fetchMessages();
+        fetchMessages().then(() => {});
 
         const subscription = subscribeToMessages();
 
         return () => {
-            supabase.removeChannel(subscription);
+            supabase.removeChannel(subscription).then(() => {});
         };
     }, [requestId]);
 

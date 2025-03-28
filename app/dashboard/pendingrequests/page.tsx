@@ -1,17 +1,14 @@
-import { createClient } from '@/app/utils/supabase/server'
+"use client";
+
 import ClientRequests from "./client";
 import ProviderRequests from "./provider";
+import {useContext} from "react";
+import {userContext} from "@/app/dashboard/user-context";
 
-export default async function Page() {
-    const supabase = await createClient();
-    
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+export default function Page() {
+    const {user} = useContext(userContext);
 
-    if(!user) {return <div>Loading...</div>}
-
-    console.log(user);
+    if (!user) return <div>Loading...</div>;
 
     return (
         <main className="w-full min-h-screen p-8">

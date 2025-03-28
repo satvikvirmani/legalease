@@ -1,47 +1,40 @@
-import { createClient } from '@/app/utils/supabase/server'
+"use client";
 
-import { Noto_Serif } from 'next/font/google'
-import Username from '@/app/dashboard/account/username'
-import AddressDetails from '@/app/dashboard/account/address-details'
-import ProviderDetails from '@/app/dashboard/account/provider-details'
-import { Divider } from "@heroui/react";
-import BasicDetails from '@/app/dashboard/account/basic-details'
+import Username from "@/app/dashboard/account/username";
+import BasicDetails from "@/app/dashboard/account/basic-details";
+import AddressDetails from "@/app/dashboard/account/address-details";
+import ProviderDetails from "@/app/dashboard/account/provider-details";
+import {useContext} from "react";
+import {Accordion, AccordionItem, Divider} from "@heroui/react";
+import {userContext} from "@/app/dashboard/user-context";
 
-const NotoSerif = Noto_Serif({
-    weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-    subsets: ["latin"]
-})
+export default function Home() {
+    const {user} = useContext(userContext);
 
-export default async function Home() {
-    const supabase = await createClient();
+    console.log(user);
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+    if (!user) return <div>Loading...</div>;
 
     return (
-        <main className='p-16'>
-            <h1 className={`mb-6 text-2xl font-light ${NotoSerif.className}`}>Complete your profile to get started</h1>
-            <Divider className="my-4" />
-            {
-                user?.user_metadata.role == 'provider' && (
-                    <>
-                        <Username user={user} />
-                        <Divider className="my-4" />
-                    </>
-                )
-            }
-            <BasicDetails user={user} />
-            <Divider className="my-4" />
-            <AddressDetails user={user} />
-            <Divider className="my-4" />
-            {
-                user?.user_metadata.role == 'provider' && (
-                    <>
-                        <ProviderDetails user={user} />
-                    </>
-                )
-            }
-        </main>
-    )
+        <section className="p-16">
+            <h1 className="mb-6 text-2xl">Complete your profile to get started</h1>
+            <Divider className="my-4"/>
+            <Accordion>
+                <AccordionItem key="1" aria-label="Username Details" title="Username Details">
+                    <Username user={user}/>
+                </AccordionItem>
+                <AccordionItem key="2" aria-label="Basic Details" title="Basic Details">
+                    <BasicDetails user={user}/>
+                </AccordionItem>
+                <AccordionItem key="3" aria-label="Address Details" title="Address Details">
+                    <AddressDetails user={user}/>
+                </AccordionItem>
+                {user?.user_metadata.role === "provider" ? (
+                    <AccordionItem key="4" aria-label="Provider Details" title="Provider Details">
+                        <ProviderDetails user={user}/>
+                    </AccordionItem>
+                ) : null}
+            </Accordion>
+        </section>
+    );
 }

@@ -3,23 +3,33 @@
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from "@/app/utils/supabase/client";
 
-import { Button, Card, CardBody, Form, Input, Textarea } from "@heroui/react"
+import { Button, Form, Input, Textarea } from "@heroui/react"
 import { User } from '@supabase/supabase-js';
 import { addToast } from '@heroui/toast';
+
+interface AddressInterface {
+    city: string;
+    country: string;
+    pin_code: string;
+    state: string;
+    street: string;
+    user_id: string;
+}
 
 const AddressDetails = ({ user }: { user: User | null }) => {
     const supabase = createClient();
 
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
-    const [address, setAddress] = useState<any | null>(null);
+    const [address, setAddress] = useState<AddressInterface | null>(null);
 
 
     const getProfile = useCallback(async () => {
-        try {
-            setIsLoading(true);
+        if (!user) return;
+        setIsLoading(true);
 
-            const { data: data, error: error } = await supabase
+        try {
+            const { data, error } = await supabase
                 .from("addresses")
                 .select(`*`)
                 .eq("user_id", user?.id)
@@ -28,47 +38,119 @@ const AddressDetails = ({ user }: { user: User | null }) => {
             if (error) {
                 addToast({
                     title: "Notification",
-                    description: (error as any)?.message || "An unexpected error occurred",
+                    description: error.message || "An unexpected error occurred",
                     color: "danger",
                     variant: "bordered",
                     radius: "md"
                 })
-            }
-
-            if (data) {
+            } else if (data) {
                 setAddress(data);
             }
 
         } catch (error) {
-            console.error(error);
+            console.error("An error occurred while fetching the profile:", error);
         } finally {
             setIsLoading(false);
         }
     }, [user, supabase]);
 
     useEffect(() => {
-        getProfile();
-    }, [user, getProfile]);
+        getProfile().then(() => {
+        });
+        }, [user, getProfile]);
 
     const onSubmit = async (e: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            setIsLoading(true);
-
             const formData = new FormData(e.currentTarget);
 
-            const { error: error } = await supabase.from("addresses").upsert({
+            const streetInput = formData.get("street") as string;
+
+            if (!streetInput) {
+                setErrors({
+                    street: "Street is required.",
+                });
+                setIsLoading(false);
+                return;
+            }
+
+            const cityInput = formData.get("city") as string;
+
+            if (!cityInput) {
+                setErrors({
+                    city: "City is required.",
+                });
+                setIsLoading(false);
+            }
+
+            const stateInput = formData.get("state") as string;
+
+            if (!stateInput) {
+                setErrors({
+                    state: "State is required.",
+                });
+                setIsLoading(false);
+            }
+
+            const pincodeInput = formData.get("pincode") as string;
+
+            if (!pincodeInput) {
+                setErrors({
+                    pincode: "Pincode is required.",
+                });
+                setIsLoading(false);
+            }
+
+            const countryInput = formData.get("country") as string;
+
+            if (!countryInput) {
+                setErrors({
+                    country: "Country is required.",
+                });
+                setIsLoading(false);
+            }
+
+            const { error: upsertError } = await supabase.from("addresses").upsert({
                 user_id: user?.id as string,
-                street: formData.get("street") as string,
-                city: formData.get("city") as string,
-                state: formData.get("state") as string,
-                pin_code: formData.get("pincode") as string,
-                country: formData.get("country") as string,
+                street: streetInput,
+                city: cityInput,
+                state: stateInput,
+                pin_code: pincodeInput,
+                country: countryInput,
             });
 
-            if (error) throw error;
+            if (upsertError) {
+                addToast({
+                    title: "Notification",
+                    description: upsertError.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                })
+            }
+
+            const profileComplete = user?.user_metadata?.profile_complete || {};
+
+            const updatedProfileComplete = {
+                ...profileComplete,
+                address: true
+            };
+
+            const {error: updateError} = await supabase.auth.updateUser({
+                data: {profile_complete: updatedProfileComplete},
+            });
+
+            if (updateError) {
+                addToast({
+                    title: "Notification",
+                    description: updateError.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                })
+            }
 
             addToast({
                 title: "Notification",
@@ -77,9 +159,25 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                 variant: "bordered",
                 radius: "md"
             })
+
+            setErrors({});
+            setAddress((prevDetails) => ({
+                ...prevDetails!,
+                street: streetInput,
+                city: cityInput,
+                state: stateInput,
+                pin_code: pincodeInput,
+                country: countryInput,
+            }));
         } catch (error) {
-            console.log(error);
-            console.error(error);
+            console.error("An error occurred while updating the address details:", error);
+            addToast({
+                title: "Error",
+                description: "Failed to update address details. Please try again.",
+                color: "danger",
+                variant: "bordered",
+                radius: "md",
+            });
         } finally {
             setIsLoading(false);
         }
@@ -93,11 +191,10 @@ const AddressDetails = ({ user }: { user: User | null }) => {
             validationErrors={errors}
             onSubmit={onSubmit}
         >
-        <h1 className="mb-8 text-2xl">Address Details</h1>
             <div className='w-full grid grid-cols-2 gap-8'>
                 <Textarea
                     value={address?.street}
-                    onValueChange={(value) => setAddress({ ...address, street: value })}
+                    onValueChange={(value) => setAddress({ ...address!, street: value })}
                     isRequired
                     label="Street Address"
                     // labelPlacement="outside"
@@ -109,7 +206,7 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                 />
                 <Input
                     value={address?.city}
-                    onValueChange={(value) => setAddress({ ...address, city: value })}
+                    onValueChange={(value) => setAddress({ ...address!, city: value })}
                     isRequired
                     isDisabled={isLoading}
                     label="City"
@@ -122,7 +219,7 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                 />
                 <Input
                     value={address?.state}
-                    onValueChange={(value) => setAddress({ ...address, state: value })}
+                    onValueChange={(value) => setAddress({ ...address!, state: value })}
                     isRequired
                     isDisabled={isLoading}
                     label="State"
@@ -135,7 +232,7 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                 />
                 <Input
                     value={address?.pin_code}
-                    onValueChange={(value) => setAddress({ ...address, pin_code: value })}
+                    onValueChange={(value) => setAddress({ ...address!, pin_code: value })}
                     isRequired
                     isDisabled={isLoading}
                     label="Pin-Code"

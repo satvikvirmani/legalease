@@ -1,8 +1,13 @@
 "use client";
 
-import { createContext } from "react";
-import { User } from "@supabase/supabase-js";
+import React from "react";
+import type { User } from "@supabase/supabase-js";
 
-const userContext = createContext<User | null>(null);
-
-export { userContext };
+// Create a userContext with a default shape
+export const userContext = React.createContext<{
+    user: User | null;
+    updateUser: (user: Partial<User>) => void;
+}>({
+    user: null,
+    updateUser: () => {},
+});

@@ -4,7 +4,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import { Card, CardHeader, CardBody, CardFooter, Chip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input, Form } from "@heroui/react";
 import { addToast } from "@heroui/toast";
 import { User } from "@supabase/supabase-js";
-import { act, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Request = {
   id: string;
@@ -20,53 +20,71 @@ const ProviderRequests = ({ user }: { user: User }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { isOpen: isOpenRejection, onOpen: onOpenRejection, onOpenChange: onOpenChangeRejection } = useDisclosure();
 
-
   const supabase = createClient();
 
   const fetchRequests = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
-
       const { data: requestsData, error: fetchError } = await supabase
-        .from("requests")
-        .select("*")
-        .eq("provider_id", user.id)
-        .eq("status", "pending");
+          .from("requests")
+          .select("*")
+          .eq("provider_id", user.id)
+          .eq("status", "pending");
 
-
-      if (fetchError) throw fetchError;
-      if (!requestsData || requestsData.length === 0) {
+      if (fetchError) {
+        addToast({
+          title: "Notification",
+          description: fetchError.message || "An unexpected error occurred",
+          color: "danger",
+          variant: "bordered",
+          radius: "md"
+        })
+      } else if (!requestsData || requestsData.length === 0) {
         setRequests([]);
         return;
+      } else if(requestsData && requestsData.length > 0) {
+        const clientIds = requestsData.map((req) => req.client_id);
+
+        const { data: clientData, error: clientError } = await supabase
+            .from("profiles")
+            .select("user_id, first_name, last_name")
+            .in("user_id", clientIds);
+
+        if (clientError) {
+          addToast({
+            title: "Notification",
+            description: clientError.message || "An unexpected error occurred",
+            color: "danger",
+            variant: "bordered",
+            radius: "md"
+          })
+        } else if(clientData) {
+          const requestsWithClientDetails = requestsData.map((req) => {
+            const provider = clientData.find((p) => p.user_id === req.client_id);
+            return {
+              ...req,
+              client_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Client",
+            };
+          });
+
+          setRequests(requestsWithClientDetails);
+        }
       }
-
-      const clientIds = requestsData.map((req) => req.client_id);
-
-      const { data: clientData, error: clientError } = await supabase
-        .from("profiles")
-        .select("user_id, first_name, last_name")
-        .in("user_id", clientIds);
-
-      if (clientError) throw clientError;
-
-      const requestsWithClientDetails = requestsData.map((req) => {
-        const client = clientData.find((p) => p.user_id === req.client_id);
-        return {
-          ...req,
-          client_name: client ? `${client.first_name} ${client.last_name}` : "Unknown client",
-        };
+    } catch (error) {
+      console.error("An error occurred while fetching the profile:", error);
+      addToast({
+        title: "Error",
+        description: "Failed to fetch requests. Please try again.",
+        color: "danger",
+        variant: "bordered",
+        radius: "md",
       });
-
-      setRequests(requestsWithClientDetails);
-    } catch (fetchError: any) {
-      console.error("Error fetching requests:", fetchError);
-      setError("Unable to fetch pending requests. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -74,7 +92,8 @@ const ProviderRequests = ({ user }: { user: User }) => {
 
   useEffect(() => {
     if (user) {
-      fetchRequests();
+      fetchRequests().then(() => {
+      });
     }
   }, [user]);
 
@@ -87,9 +106,7 @@ const ProviderRequests = ({ user }: { user: User }) => {
     e.preventDefault();
     try {
       if (!requestId) return;
-  
-      setActionLoading(true);
-  
+
       const formData = new FormData(e.currentTarget);
       const rejectionReason = formData.get("reason") as string | null;
   
@@ -103,7 +120,15 @@ const ProviderRequests = ({ user }: { user: User }) => {
         .update(updateData)
         .eq("id", requestId);
   
-      if (error) throw error;
+      if (error) {
+        addToast({
+          title: "Notification",
+          description: error.message || "An unexpected error occurred",
+          color: "danger",
+          variant: "bordered",
+          radius: "md"
+        })
+      }
   
       setRequests((prev) => prev.filter((request) => request.id !== requestId));
       setSelectedRequest(null);
@@ -118,7 +143,7 @@ const ProviderRequests = ({ user }: { user: User }) => {
   
       onClose();
     } catch (error) {
-      setError(`Failed to ${action} request. Please try again.`);
+      console.error("An error occurred while updating request status:", error);
       addToast({
         title: "Notification",
         description: `Failed to ${action} request. Please try again`,
@@ -126,8 +151,6 @@ const ProviderRequests = ({ user }: { user: User }) => {
         variant: "bordered",
         radius: "md",
       });
-    } finally {
-      setActionLoading(false);
     }
   };
 

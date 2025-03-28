@@ -16,6 +16,7 @@
     "@heroui/toast": "^2.0.5",
     "@huggingface/inference": "^2.8.1",
     "@radix-ui/react-slot": "^1.1.2",
+    "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.10",
     "apexcharts": "^4.3.0",

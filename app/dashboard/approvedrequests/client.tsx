@@ -2,7 +2,7 @@
 
 import { createClient } from "@/app/utils/supabase/client";
 import { Card, CardBody, CardFooter, CardHeader, Chip } from "@heroui/react";
-import Chat from "./chat";
+import Chat from "@/app/dashboard/approvedrequests/chat";
 
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import {
     Button,
     useDisclosure,
 } from "@heroui/react";
+import {addToast} from "@heroui/toast";
 
 type Request = {
     id: string;
@@ -39,44 +40,66 @@ const ClientRequests = ({ user }: { user: User }) => {
     const supabase = createClient();
 
     const fetchRequests = async () => {
-        try {
-            setLoading(true);
-            setError(null);
+        setLoading(true);
+        setError(null);
 
+        try {
             const { data: requestsData, error: fetchError } = await supabase
                 .from("requests")
                 .select("*")
                 .eq("client_id", user.id)
                 .eq("status", "approved");
 
-            if (fetchError) throw fetchError;
-            if (!requestsData || requestsData.length === 0) {
+            if (fetchError) {
+                addToast({
+                    title: "Notification",
+                    description: fetchError.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                })
+            } else if (!requestsData || requestsData.length === 0) {
                 setRequests([]);
                 return;
+            } else if(requestsData && requestsData.length > 0) {
+                const providerIds = requestsData.map((req) => req.provider_id);
+
+                const { data: providerData, error: providerError } = await supabase
+                    .from("profiles")
+                    .select("user_id, first_name, last_name, rating")
+                    .in("user_id", providerIds);
+
+                if (providerError) {
+                    addToast({
+                        title: "Notification",
+                        description: providerError.message || "An unexpected error occurred",
+                        color: "danger",
+                        variant: "bordered",
+                        radius: "md"
+                    })
+                } else if (providerData) {
+                    const requestsWithProviderDetails = requestsData.map((req) => {
+                        const provider = providerData.find((p) => p.user_id === req.provider_id);
+                        return {
+                            ...req,
+                            provider_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Provider",
+                            rating: provider ? provider.rating : null,
+                        };
+                    });
+
+                    setRequests(requestsWithProviderDetails);
+                }
             }
 
-            const providerIds = requestsData.map((req) => req.provider_id);
-
-            const { data: providerData, error: providerError } = await supabase
-                .from("profiles")
-                .select("user_id, first_name, last_name, rating")
-                .in("user_id", providerIds);
-
-            if (providerError) throw providerError;
-
-            const requestsWithProviderDetails = requestsData.map((req) => {
-                const provider = providerData.find((p) => p.user_id === req.provider_id);
-                return {
-                    ...req,
-                    provider_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Provider",
-                    rating: provider ? provider.rating : null,
-                };
+        } catch (error) {
+            console.error("An error occurred while fetching the profile:", error);
+            addToast({
+                title: "Error",
+                description: "Failed to fetch requests. Please try again.",
+                color: "danger",
+                variant: "bordered",
+                radius: "md",
             });
-
-            setRequests(requestsWithProviderDetails);
-        } catch (fetchError: any) {
-            console.error("Error fetching requests:", fetchError);
-            setError("Unable to fetch approved requests. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -84,7 +107,8 @@ const ClientRequests = ({ user }: { user: User }) => {
 
     useEffect(() => {
         if (user) {
-            fetchRequests();
+            fetchRequests().then(() => {
+            });
         }
     }, [user]);
 
@@ -92,15 +116,19 @@ const ClientRequests = ({ user }: { user: User }) => {
         if (!selectedRequest) return;
     
         try {
-            console.log(`Closing request #${selectedRequest.id}`);
-    
             const { error } = await supabase
                 .from("requests")
                 .update({ status: "closed" })
                 .eq("id", selectedRequest.id);
     
             if (error) {
-                console.error("Error closing request:", error.message);
+                addToast({
+                    title: "Notification",
+                    description: error.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                })
                 return;
             }
     
@@ -112,6 +140,13 @@ const ClientRequests = ({ user }: { user: User }) => {
             onOpenChange();
         } catch (error) {
             console.error("Unexpected error closing request:", error);
+            addToast({
+                title: "Notification",
+                description: "Failed to close request. Please try again.",
+                color: "danger",
+                variant: "bordered",
+                radius: "md"
+            })
         }
     };
 

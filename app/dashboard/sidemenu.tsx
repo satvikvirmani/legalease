@@ -1,18 +1,22 @@
 "use client"
 
-import { User } from "@supabase/supabase-js";
+// import { User } from "@supabase/supabase-js";
 import { usePathname } from "next/navigation";
-import { HomeIcon, CheckBadgeIcon, InboxIcon, ArchiveBoxXMarkIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, CheckBadgeIcon, InboxIcon, ArchiveBoxXMarkIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
 import { Button, Link, Avatar, Tooltip } from "@heroui/react";
+import {userContext} from "@/app/dashboard/user-context";
+import {useContext} from "react";
 
-const SideMenu = ({ user }: { user: User | null }) => {
+const SideMenu = () => {
     const pathname = usePathname();
 
     const menuItems = [
         { label: "Approved Requests", href: "/dashboard/approvedrequests", icon: CheckBadgeIcon },
         { label: "Pending Requests", href: "/dashboard/pendingrequests", icon: InboxIcon },
-        { label: "Rejected Requests", href: "/dashboard/rejectedrequests", icon: ArchiveBoxXMarkIcon }
+        { label: "Rejected Requests", href: "/dashboard/rejectedrequests", icon: ArchiveBoxIcon },
+        {label: "Closed Requests", href: "/dashboard/closedrequests", icon: ArchiveBoxXMarkIcon},
     ];
+    const { user } = useContext(userContext); // Get user from context
 
     return (
         <div className="flex h-screen w-16 flex-col justify-between border bg-white">

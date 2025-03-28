@@ -5,6 +5,8 @@ import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import Chat from "./chat";
 import { Card, CardHeader, CardBody, CardFooter, Chip, useDisclosure, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
+import {addToast} from "@heroui/toast";
+
 
 type Request = {
   id: string;
@@ -20,61 +22,81 @@ const ProviderRequests = ({ user }: { user: User }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
-  const [actionLoading, setActionLoading] = useState(false);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const supabase = createClient();
 
   const fetchRequests = async () => {
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
-
       const { data: requestsData, error: fetchError } = await supabase
-        .from("requests")
-        .select("*")
-        .eq("provider_id", user.id)
-        .eq("status", "approved");
+          .from("requests")
+          .select("*")
+          .eq("provider_id", user.id)
+          .eq("status", "approved");
 
-
-      if (fetchError) throw fetchError;
-      if (!requestsData || requestsData.length === 0) {
+      if (fetchError) {
+        addToast({
+          title: "Notification",
+          description: fetchError.message || "An unexpected error occurred",
+          color: "danger",
+          variant: "bordered",
+          radius: "md"
+        })
+      } else if (!requestsData || requestsData.length === 0) {
         setRequests([]);
         return;
+      } else if(requestsData && requestsData.length > 0) {
+        const clientIds = requestsData.map((req) => req.client_id);
+
+        const { data: clientData, error: clientError } = await supabase
+            .from("profiles")
+            .select("user_id, first_name, last_name")
+            .in("user_id", clientIds);
+
+        if (clientError) {
+          addToast({
+            title: "Notification",
+            description: clientError.message || "An unexpected error occurred",
+            color: "danger",
+            variant: "bordered",
+            radius: "md"
+          })
+        } else if(clientData) {
+          const requestsWithClientDetails = requestsData.map((req) => {
+            const provider = clientData.find((p) => p.user_id === req.client_id);
+            return {
+              ...req,
+              client_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Client",
+            };
+          });
+
+          setRequests(requestsWithClientDetails);
+        }
       }
-
-      const clientIds = requestsData.map((req) => req.client_id);
-
-      const { data: clientData, error: clientError } = await supabase
-        .from("profiles")
-        .select("user_id, first_name, last_name")
-        .in("user_id", clientIds);
-
-      if (clientError) throw clientError;
-
-      const requestsWithClientDetails = requestsData.map((req) => {
-        const provider = clientData.find((p) => p.user_id === req.client_id);
-        return {
-          ...req,
-          client_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Client",
-        };
+    } catch (error) {
+      console.error("An error occurred while fetching the profile:", error);
+      addToast({
+        title: "Error",
+        description: "Failed to fetch requests. Please try again.",
+        color: "danger",
+        variant: "bordered",
+        radius: "md",
       });
-
-      setRequests(requestsWithClientDetails);
-    } catch (fetchError: any) {
-      console.error("Error fetching requests:", fetchError);
-      setError("Unable to fetch approved requests. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (user) {
-      fetchRequests();
+      fetchRequests().then(() => {
+      });
     }
   }, [user]);
-
 
   if (loading) {
     return <div className="text-center py-6">Loading approved requests...</div>;

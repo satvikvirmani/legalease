@@ -11,7 +11,12 @@ export async function signup(formdata: FormData) {
     options: {
       data: {
         role: formdata.get('role') as string,
-        profile_complete: false,
+        profile_complete: {
+          username: false,
+          basic: false,
+          address: false,
+          provider: false,
+        },
         avatar_url: null,
       },
     },

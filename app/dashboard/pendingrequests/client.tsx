@@ -15,6 +15,7 @@ import {
     Button,
     useDisclosure,
 } from "@heroui/react";
+import {addToast} from "@heroui/toast";
 
 type Request = {
     id: string;
@@ -42,9 +43,16 @@ const ClientRequests = ({ user }: { user: User }) => {
             .from("requests")
             .select("*", { count: "exact", head: true })
             .eq("provider_id", user.id)
-            .eq("status", "rejected");
+            .eq("status", "pending");
 
         if (error) {
+                addToast({
+                    title: "Notification",
+                    description: error.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                })
             setError("Unable to fetch request count.");
             return;
         }
@@ -64,44 +72,66 @@ const ClientRequests = ({ user }: { user: User }) => {
     };
 
     const fetchRequests = async () => {
-        try {
-            setLoading(true);
-            setError(null);
+        setLoading(true);
+        setError(null);
 
+        try {
             const { data: requestsData, error: fetchError } = await supabase
                 .from("requests")
                 .select("*")
                 .eq("client_id", user.id)
-                .eq("status", "rejected");
+                .eq("status", "pending");
 
-
-            if (fetchError) throw fetchError;
-            if (!requestsData || requestsData.length === 0) {
+            if (fetchError) {
+                addToast({
+                    title: "Notification",
+                    description: fetchError.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                })
+            } else if (!requestsData || requestsData.length === 0) {
                 setRequests([]);
                 return;
+            } else if(requestsData && requestsData.length > 0) {
+                const providerIds = requestsData.map((req) => req.provider_id);
+
+                const { data: providerData, error: providerError } = await supabase
+                    .from("profiles")
+                    .select("user_id, first_name, last_name, rating")
+                    .in("user_id", providerIds);
+
+                if (providerError) {
+                    addToast({
+                        title: "Notification",
+                        description: providerError.message || "An unexpected error occurred",
+                        color: "danger",
+                        variant: "bordered",
+                        radius: "md"
+                    })
+                } else if (providerData) {
+                    const requestsWithProviderDetails = requestsData.map((req) => {
+                        const provider = providerData.find((p) => p.user_id === req.provider_id);
+                        return {
+                            ...req,
+                            provider_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Provider",
+                            rating: provider ? provider.rating : null,
+                        };
+                    });
+
+                    setRequests(requestsWithProviderDetails);
+                }
             }
 
-            const providerIds = requestsData.map((req) => req.provider_id);
-
-            const { data: providerData, error: providerError } = await supabase
-                .from("profiles")
-                .select("user_id, first_name, last_name")
-                .in("user_id", providerIds);
-
-            if (providerError) throw providerError;
-
-            const requestsWithProviderDetails = requestsData.map((req) => {
-                const provider = providerData.find((p) => p.user_id === req.provider_id);
-                return {
-                    ...req,
-                    provider_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Provider",
-                };
+        } catch (error) {
+            console.error("An error occurred while fetching the profile:", error);
+            addToast({
+                title: "Error",
+                description: "Failed to fetch requests. Please try again.",
+                color: "danger",
+                variant: "bordered",
+                radius: "md",
             });
-
-            setRequests(requestsWithProviderDetails);
-        } catch (fetchError: any) {
-            console.error("Error fetching requests:", fetchError);
-            setError("Unable to fetch pending requests. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -109,7 +139,8 @@ const ClientRequests = ({ user }: { user: User }) => {
 
     useEffect(() => {
         if (user) {
-            fetchRequestCount().then(fetchRequests);
+            fetchRequests().then(() => {
+            });
         }
     }, [user]);
 

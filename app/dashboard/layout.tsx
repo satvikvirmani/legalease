@@ -1,41 +1,23 @@
-"use client"
-
-import { createClient } from "@/app/utils/supabase/client";
+import { createClient } from "@/app/utils/supabase/server";
 import SideMenu from "@/app/dashboard/sidemenu";
-import { userContext } from "@/app/dashboard/user-context";
-import { useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
+import UserProvider from "@/app/dashboard/user-provider";
+import { ReactNode } from "react";
+import type { Metadata } from "next";
 
-export default function HomeLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
+export const metadata: Metadata = {
+    title: "LegalEase - Dashboard",
+};
 
-    const [user, setUser] = useState<User | null>(null);
-    
-    const supabase = createClient()
-  
-    const fetchUser = async () => {
-      const { data: { user }, } = await supabase.auth.getUser();
-  
-      setUser(user);
-    };
-  
-    useEffect(() => {
-      fetchUser();
-    }, [supabase]);
-
-    if(!user) {return <div>Loading...</div>}
+export default async function HomeLayout({ children }: { children: ReactNode }) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
     return (
-        <userContext.Provider value={user}>
+        <UserProvider user={user}>
             <main className="flex flex-row">
-                <SideMenu user={user} />
-                <main className="w-full h-screen overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
-                    {children}
-                </main>
+                <SideMenu />
+                <main className="w-full h-screen overflow-y-scroll">{children}</main>
             </main>
-        </userContext.Provider>
-    )
+        </UserProvider>
+    );
 }
