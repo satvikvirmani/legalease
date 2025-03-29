@@ -1,27 +1,47 @@
-import { HfInference } from '@huggingface/inference'
+import {FeatureExtractionOutput, HfInference} from '@huggingface/inference';
 
-const hf = new HfInference(process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY)
+const hf = new HfInference(process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY);
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
     try {
-        const { query: description } = await request.json(); // Expect `query` key here
-        if (!description || typeof description !== 'string') {
-          throw new Error('Invalid input for embedding generation');
+        if (!process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY) {
+            return new Response(JSON.stringify({ error: 'Missing API Key' }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            });
         }
-    
-        const response = await hf.featureExtraction({
-            model: "sentence-transformers/all-MiniLM-L6-v2",
-            inputs: description,
-          });
 
-        return new Response(JSON.stringify({ embedding: response }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' },
+        const body = await request.json();
+        const description = body?.query;
+
+        if (!description || typeof description !== 'string' || description.trim().length === 0) {
+            return new Response(JSON.stringify({ error: 'Invalid or empty input provided' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+
+        const response: FeatureExtractionOutput = await hf.featureExtraction({
+            model: 'sentence-transformers/all-MiniLM-L6-v2',
+            inputs: description.trim(),
         });
-    } catch (error) {
+
         return new Response(
-            JSON.stringify({ error: `Failed to generate embedding: ${error}` }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({ embedding: response }),
+            {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
+    } catch (error) {
+        console.error('Error generating embedding:', error);
+
+        return new Response(
+            JSON.stringify({ error: 'Failed to generate embedding', details: error instanceof Error ? error.message : String(error) }),
+            {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            }
         );
     }
 }

@@ -24,7 +24,6 @@ type Request = {
     provider_id: string;
     provider_name?: string;
     client_id: string;
-    rejection_reason: string;
 };
 
 const ClientRequests = ({ user }: { user: User }) => {
@@ -80,7 +79,7 @@ const ClientRequests = ({ user }: { user: User }) => {
                 .from("requests")
                 .select("*")
                 .eq("client_id", user.id)
-                .eq("status", "rejected");
+                .eq("status", "closed");
 
             if (fetchError) {
                 addToast({
@@ -158,7 +157,7 @@ const ClientRequests = ({ user }: { user: User }) => {
         <div className="w-full">
             <Skeleton className="rounded-lg mb-8" isLoaded={!loading}>
                 <h1 className="text-2xl">
-                    Rejected Requests
+                    Closed Requests
                 </h1>
             </Skeleton>
             {requests.length > 0 ? (
@@ -177,15 +176,12 @@ const ClientRequests = ({ user }: { user: User }) => {
                                     <p>{request.description || "No description provided"}</p>
                                 </Skeleton>
                                 <Skeleton className="rounded-lg" isLoaded={!loading}>
-                                    <p className="text-sm">Submitted to: {request.client_id}</p>
-                                </Skeleton>
-                                <Skeleton className="rounded-lg" isLoaded={!loading}>
-                                    <p className="text-red-400">Reason: {selectedRequest?.rejection_reason}</p>
+                                    <p className="text-sm">Submitted to: {request.provider_name}</p>
                                 </Skeleton>
                             </CardBody>
                             <CardFooter>
                                 <Skeleton className="rounded-lg" isLoaded={!loading}>
-                                    <Chip color="danger" variant="bordered">Rejected</Chip>
+                                    <Chip color="danger" variant="bordered">closed</Chip>
                                 </Skeleton>
                             </CardFooter>
                         </Card>
@@ -194,7 +190,7 @@ const ClientRequests = ({ user }: { user: User }) => {
             ) : (
                 <>
                     {
-                        !loading && <p className="text-gray-500">No rejected requests found.</p>
+                        !loading && <p className="text-gray-500">No closed requests found.</p>
                     }
                 </>
             )}
@@ -207,7 +203,6 @@ const ClientRequests = ({ user }: { user: User }) => {
 
                                 <p>{selectedRequest?.description || "No description provided"}</p>
                                 <p className="text-sm">Submitted to: {selectedRequest?.provider_name}</p>
-                                <p className="text-red-400">Reason: {selectedRequest?.rejection_reason}</p>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>

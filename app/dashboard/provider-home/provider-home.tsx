@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RequestStatusChart } from "@/app/dashboard/provider-home/request-status-chart"
-import { RatingOverTimeChart } from "@/app/dashboard/provider-home/rating-over-time-chart"
 import { RequestStatusCard } from "@/app/dashboard/provider-home/request-status-card"
 import { User } from "@supabase/supabase-js"
 import { useState, useEffect } from "react"

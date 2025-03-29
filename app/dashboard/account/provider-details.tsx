@@ -2,55 +2,80 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from "@/app/utils/supabase/client";
+
 import { Button, Form, Input, Textarea, Checkbox } from "@heroui/react";
 import { User } from '@supabase/supabase-js';
 import { addToast } from '@heroui/toast';
+
+interface Availability {
+    day: string;
+    time: string;
+}
+
+interface SocialLink {
+    platform: string;
+    url: string;
+}
+
+interface ProviderInterface {
+    user_id: string;
+    service_type: string;
+    license_number: string;
+    experience_years: number;
+    specialization: string;
+    certifications: string;
+    description: string;
+    description_embedding: number[];
+    availability: Availability[];
+    social_links: SocialLink[];
+}
 
 const ProviderDetails = ({ user }: { user: User | null }) => {
     const supabase = createClient();
 
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
-    const [providerDetails, setProviderDetails] = useState<any | null>(null);
-    const [availability, setAvailability] = useState<any[]>([]);
-    const [socialLinks, setSocialLinks] = useState<{ platform: string; url: string }[]>([
+    const [providerDetails, setProviderDetails] = useState<ProviderInterface | null>(null);
+
+    const [availability, setAvailability] = useState<Availability[]>([]);
+    const [socialLinks, setSocialLinks] = useState<SocialLink[]>([
         { platform: "LinkedIn", url: "" },
     ]);
 
     const getProfile = useCallback(async () => {
-        try {
-            setIsLoading(true);
+        if (!user) return;
+        setIsLoading(true);
 
-            const { data: provider_data, error: addressError } = await supabase
+        try {
+            const { data, error } = await supabase
                 .from("providers")
                 .select(`*`)
                 .eq("user_id", user?.id)
                 .single();
 
-            if (addressError) {
+            if (error) {
                 addToast({
                     title: "Notification",
-                    description: (addressError as any)?.message || "An unexpected error occurred",
+                    description: error.message || "An unexpected error occurred",
                     color: "danger",
                     variant: "bordered",
                     radius: "md"
                 })
-            }
-
-            if (provider_data) {
-                setProviderDetails(provider_data);
-                setAvailability(provider_data.availability || []);
-                setSocialLinks(provider_data.social_links || []);
+            } else if (data) {
+                setProviderDetails(data);
+                setAvailability(data.availability || []);
+                setSocialLinks(data.social_links || []);
             }
         } catch (error) {
-            console.error(error);
+            console.error("An error occurred while fetching the profile:", error);
         } finally {
             setIsLoading(false);
         }
     }, [user, supabase]);
 
     useEffect(() => {
-        getProfile();
+        getProfile().then(() => {
+        });
     }, [user, getProfile]);
 
     const onSubmit = async (e: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
@@ -62,20 +87,91 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
 
             const embedding = await getEmbedding(formData.get("description") as string);
 
-            const { error } = await supabase.from("providers").upsert({
+            const serviceTypeInput = formData.get("service_type") as string;
+            if (!serviceTypeInput) {
+                setErrors({ service_type: "Service type is required." });
+                setIsLoading(false);
+                return;
+            }
+
+            const specializationInput = formData.get("specialization") as string;
+            if (!specializationInput) {
+                setErrors({ specialization: "Specialization is required." });
+                setIsLoading(false);
+                return;
+            }
+
+            const experienceYearsInput = parseFloat(formData.get("experience_years") as string);
+            if (!experienceYearsInput) {
+                setErrors({ experience_years: "Experience years are required." });
+                setIsLoading(false);
+                return;
+            }
+
+            const certificationsInput = formData.get("certifications") as string;
+            if (!certificationsInput) {
+                setErrors({ certifications: "Certifications are required." });
+                setIsLoading(false);
+                return;
+            }
+
+            const licenseNumberInput = formData.get("license_number") as string;
+            if (!licenseNumberInput) {
+                setErrors({ license_number: "License number is required." });
+                setIsLoading(false);
+                return;
+            }
+
+            const descriptionInput = formData.get("description") as string;
+            if (!descriptionInput) {
+                setErrors({ description: "Description is required." });
+                setIsLoading(false);
+                return;
+            }
+
+            const { error: upsertError } = await supabase.from("providers").upsert({
                 user_id: user?.id as string,
-                service_type: formData.get("service_type") as string,
-                specialization: formData.get("specialization") as string,
-                experience_years: formData.get("experience_years") as string,
-                certifications: formData.get("certifications") as string,
-                license_number: formData.get("license_number") as string,
-                description: formData.get("description") as string,
+                service_type: serviceTypeInput,
+                specialization: specializationInput,
+                experience_years: experienceYearsInput,
+                certifications: certificationsInput,
+                license_number: licenseNumberInput,
+                description: descriptionInput,
                 description_embedding: embedding,
                 availability: availability,
                 social_links: socialLinks,
             });
 
-            if (error) throw error;
+            if (upsertError) {
+                addToast({
+                    title: "Notification",
+                    description: upsertError.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                });
+            }
+
+            const profileComplete = user?.user_metadata?.profile_complete || {};
+
+            const updatedProfileComplete = {
+                ...profileComplete,
+                provider: true
+            };
+
+            const {error: updateError} = await supabase.auth.updateUser({
+                data: {profile_complete: updatedProfileComplete},
+            });
+
+            if (updateError) {
+                addToast({
+                    title: "Notification",
+                    description: updateError.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                })
+            }
 
             addToast({
                 title: "Notification",
@@ -84,15 +180,33 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                 variant: "bordered",
                 radius: "md"
             })
+
+            setErrors({});
+            setProviderDetails((prevDetails) => ({
+                ...prevDetails!,
+                service_type: serviceTypeInput,
+                specialization: specializationInput,
+                experience_years: experienceYearsInput,
+                certifications: certificationsInput,
+                license_number: licenseNumberInput,
+                description: descriptionInput
+            }));
         } catch (error) {
-            console.error(error);
+            console.error("An error occurred while updating the provider details:", error);
+            addToast({
+                title: "Error",
+                description: "Failed to update provider details. Please try again.",
+                color: "danger",
+                variant: "bordered",
+                radius: "md",
+            });
         } finally {
             setIsLoading(false);
         }
     };
 
     async function getEmbedding(description: string) {
-        if (!description || typeof description !== 'string' || description.trim() === '') {
+        if (!description || description.trim() === '') {
             throw new Error('Invalid query input for embedding generation');
         }
 
@@ -134,66 +248,56 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
             <div className='w-full grid grid-cols-2 gap-8 gap-y-8'>
                 <Input
                     value={providerDetails?.service_type || ''}
-                    onValueChange={(value) => setProviderDetails({ ...providerDetails, service_type: value })}
+                    onValueChange={(value) => setProviderDetails({ ...providerDetails!, service_type: value })}
                     isRequired
                     isDisabled={isLoading}
                     label="Service Type"
-                    // labelPlacement="outside"
                     name="service_type"
-                    // placeholder="Service Type Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
                 />
                 <Input
                     value={providerDetails?.specialization || ''}
-                    onValueChange={(value) => setProviderDetails({ ...providerDetails, specialization: value })}
+                    onValueChange={(value) => setProviderDetails({ ...providerDetails!, specialization: value })}
                     isRequired
                     isDisabled={isLoading}
                     label="Specialization"
-                    // labelPlacement="outside"
                     name="specialization"
-                    // placeholder="Specialization Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
                 />
                 <Input
-                    value={providerDetails?.experience_years || ''}
+                    value={(providerDetails?.experience_years || '').toString()}
                     type='number'
-                    onValueChange={(value) => setProviderDetails({ ...providerDetails, experience_years: value })}
+                    onValueChange={(value) => setProviderDetails({ ...providerDetails!, experience_years: parseFloat(value) })}
                     isRequired
                     isDisabled={isLoading}
                     label="Experience"
-                    // labelPlacement="outside"
                     name="experience_years"
-                    // placeholder="Enter your years of experience"
                     className='w-full'
                     variant='bordered'
                     radius='md'
                 />
                 <Input
                     value={providerDetails?.certifications || ''}
-                    onValueChange={(value) => setProviderDetails({ ...providerDetails, certifications: value })}
+                    onValueChange={(value) => setProviderDetails({ ...providerDetails!, certifications: value })}
                     isRequired
                     isDisabled={isLoading}
                     label="Certifications"
-                    // labelPlacement="outside"
                     name="certifications"
-                    // placeholder="Certifications Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
                 />
                 <Input
                     value={providerDetails?.license_number || ''}
-                    onValueChange={(value) => setProviderDetails({ ...providerDetails, license_number: value })}
+                    onValueChange={(value) => setProviderDetails({ ...providerDetails!, license_number: value })}
                     isRequired
                     isDisabled={isLoading}
                     label="License Number"
-                    // labelPlacement="outside"
                     name="license_number"
-                    // placeholder="License Number Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -218,7 +322,6 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                             </Checkbox>
                             <Input
                                 size='sm'
-                                // placeholder="Time (e.g., 9am - 5pm)"
                                 value={availability.find((a) => a.day === day)?.time || ""}
                                 onValueChange={(value) => updateAvailability(day, value)}
                                 isDisabled={!availability.some((a) => a.day === day)}
@@ -234,7 +337,6 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                     {socialLinks.map((link, index) => (
                         <div key={index} className="flex items-center gap-4 mt-4">
                             <Input
-                                // placeholder="Platform (e.g., LinkedIn, Twitter)"
                                 value={link.platform}
                                 onChange={(e) =>
                                     setSocialLinks((prev) =>
@@ -248,7 +350,6 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                                 radius='md'
                             />
                             <Input
-                                // placeholder="URL (e.g., https://linkedin.com/in/username)"
                                 value={link.url}
                                 onChange={(e) =>
                                     setSocialLinks((prev) =>
@@ -285,11 +386,9 @@ const ProviderDetails = ({ user }: { user: User | null }) => {
                 </div>
                 <Textarea
                     value={providerDetails?.description || ''}
-                    onValueChange={(value) => setProviderDetails({ ...providerDetails, description: value })}
+                    onValueChange={(value) => setProviderDetails({ ...providerDetails!, description: value })}
                     isRequired
                     label="Description Address"
-                    // labelPlacement="outside"
-                    // placeholder="Enter your Description address"
                     name='description'
                     className='w-full col-span-2'
                     description="Describe your services in atleast 100 words. This is most important your profile visibility and outreach depends on this."

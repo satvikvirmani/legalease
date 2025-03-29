@@ -4,19 +4,33 @@ import { useState } from "react";
 import ProfilesDisplay from "./profiles-display";
 import { createClient } from "@/app/utils/supabase/client";
 
+interface LegalProvider {
+    provider_id: string;
+    first_name: string;
+    last_name: string;
+    username: string;
+    profile_picture: string;
+    service_type: string;
+    description: string;
+    experience_years: number;
+    similarity: number;
+}
+
 const ClientHome = () => {
     const [query, setQuery] = useState('')
     const [searchingProcedure, setSearchingProcedure] = useState(false)
-    const [providers, setProviders] = useState(null)
+    const [providers, setProviders] = useState<LegalProvider[] | null>(null)
     const [searchStatus, setSearchStatus] = useState<string | null>(null);
 
 
     const searchDocuments = async (searchText: string) => {
         const supabase = createClient();
 
+        setSearchingProcedure(true)
+
         try {
-            if (!searchText || typeof searchText !== 'string' || searchText.trim() === '') {
-                throw new Error('Invalid query input for embedding generation');
+            if (!searchText || searchText.trim() === '') {
+                return {error: "Invalid query input for embedding generation"};
             }
 
             setSearchStatus("Generating embedding for the query...");
@@ -29,7 +43,7 @@ const ClientHome = () => {
 
             if (!response.ok) {
                 console.error('Hugging Face API Error:', response.status, await response.text());
-                throw new Error(`Hugging Face API responded with status ${response.status}`);
+                return {error: "Hugging Face API responded with status ${response.status}"};
             }
 
             const output = await response.json();
@@ -44,12 +58,13 @@ const ClientHome = () => {
             })
             setSearchStatus("Retrieving matched providers...");
             await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s
-            console.log('Documents:', documents);
 
             return { documents };
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error performing vector search:', error);
-            return { error: error.message || 'Failed to perform search' };
+            return { error: (error instanceof Error ? error.message : 'Failed to perform search') };
+        } finally {
+            setSearchingProcedure(false)
         }
     }
 

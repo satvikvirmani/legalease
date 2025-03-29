@@ -1,13 +1,17 @@
-import Image from "next/image";
+// noinspection ES6RedundantAwait
+
 import { createClient } from "@/app/utils/supabase/server";
 import RequestForm from "@/app/dashboard/profile/[slug]/request";
+import Image from "next/image";
 
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/react";
+interface SocialLink {
+    platform: string;
+    url: string;
+}
 
 export default async function Page({ params }: { params: { slug: string } }) {
     const supabase = await createClient();
     const { slug } = await params;
-    const username = slug;
 
     const { data: profile, error: error_data } = await supabase
         .from("profiles")
@@ -19,7 +23,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 certifications, license_number, specialization, experience_years
             )
         `)
-        .eq("username", username)
+        .eq("username", slug)
         .single();
 
     const {
@@ -34,7 +38,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
         <div className="w-full mx-auto p-6">
             {/* Profile Header */}
             <div className="flex items-center gap-8 p-6">
-                <img
+                <Image
                     src={profile.profile_picture}
                     alt={profile.first_name}
                     width={120}
@@ -76,7 +80,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
                 <div className="mt-6 p-6">
                     <h2 className="text-xl font-semibold text-gray-700">🔗 Social Links</h2>
                     <ul className="list-disc list-inside">
-                        {profile.providers.social_links.map((link: any, index: number) => (
+                        {profile.providers.social_links.map((link: SocialLink, index: number) => (
                             <li key={index}>
                                 <a href={link.url} className="text-blue-500 hover:underline" target="_blank">
                                     {link.platform}

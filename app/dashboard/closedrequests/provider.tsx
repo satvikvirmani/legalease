@@ -22,17 +22,16 @@ type Request = {
     description?: string;
     status: string;
     provider_id: string;
-    provider_name?: string;
+    client_name: string;
     client_id: string;
-    rejection_reason: string;
 };
 
 const ClientRequests = ({ user }: { user: User }) => {
     const [requests, setRequests] = useState<Request[]>([]);
+    const [requestCount, setRequestCount] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
-    const [requestCount, setRequestCount] = useState<number | null>(null);
 
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -43,7 +42,7 @@ const ClientRequests = ({ user }: { user: User }) => {
             .from("requests")
             .select("*", { count: "exact", head: true })
             .eq("provider_id", user.id)
-            .eq("status", "pending");
+            .eq("status", "closed");
 
         if (error) {
             addToast({
@@ -65,11 +64,11 @@ const ClientRequests = ({ user }: { user: User }) => {
                 status: "rejected",
                 provider_id: user.id,
                 client_name: "John Doe",
-                client_id: `client${i + 1}`,
-                rejection_reason: "Incomplete information",
+                client_id: `client${i + 1}`
             }))
         );
     };
+
 
     const fetchRequests = async () => {
         setLoading(true);
@@ -79,8 +78,8 @@ const ClientRequests = ({ user }: { user: User }) => {
             const { data: requestsData, error: fetchError } = await supabase
                 .from("requests")
                 .select("*")
-                .eq("client_id", user.id)
-                .eq("status", "rejected");
+                .eq("provider_id", user.id)
+                .eq("status", "closed");
 
             if (fetchError) {
                 addToast({
@@ -94,35 +93,33 @@ const ClientRequests = ({ user }: { user: User }) => {
                 setRequests([]);
                 return;
             } else if(requestsData && requestsData.length > 0) {
-                const providerIds = requestsData.map((req) => req.provider_id);
+                const clientIds = requestsData.map((req) => req.client_id);
 
-                const { data: providerData, error: providerError } = await supabase
+                const { data: clientData, error: clientError } = await supabase
                     .from("profiles")
-                    .select("user_id, first_name, last_name, rating")
-                    .in("user_id", providerIds);
+                    .select("user_id, first_name, last_name")
+                    .in("user_id", clientIds);
 
-                if (providerError) {
+                if (clientError) {
                     addToast({
                         title: "Notification",
-                        description: providerError.message || "An unexpected error occurred",
+                        description: clientError.message || "An unexpected error occurred",
                         color: "danger",
                         variant: "bordered",
                         radius: "md"
                     })
-                } else if (providerData) {
-                    const requestsWithProviderDetails = requestsData.map((req) => {
-                        const provider = providerData.find((p) => p.user_id === req.provider_id);
+                } else if(clientData) {
+                    const requestsWithClientDetails = requestsData.map((req) => {
+                        const provider = clientData.find((p) => p.user_id === req.client_id);
                         return {
                             ...req,
-                            provider_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Provider",
-                            rating: provider ? provider.rating : null,
+                            client_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Client",
                         };
                     });
 
-                    setRequests(requestsWithProviderDetails);
+                    setRequests(requestsWithClientDetails);
                 }
             }
-
         } catch (error) {
             console.error("An error occurred while fetching the profile:", error);
             addToast({
@@ -158,7 +155,7 @@ const ClientRequests = ({ user }: { user: User }) => {
         <div className="w-full">
             <Skeleton className="rounded-lg mb-8" isLoaded={!loading}>
                 <h1 className="text-2xl">
-                    Rejected Requests
+                    Closed Requests
                 </h1>
             </Skeleton>
             {requests.length > 0 ? (
@@ -177,15 +174,12 @@ const ClientRequests = ({ user }: { user: User }) => {
                                     <p>{request.description || "No description provided"}</p>
                                 </Skeleton>
                                 <Skeleton className="rounded-lg" isLoaded={!loading}>
-                                    <p className="text-sm">Submitted to: {request.client_id}</p>
-                                </Skeleton>
-                                <Skeleton className="rounded-lg" isLoaded={!loading}>
-                                    <p className="text-red-400">Reason: {selectedRequest?.rejection_reason}</p>
+                                    <p className="text-sm">Submitted by: {request.client_name}</p>
                                 </Skeleton>
                             </CardBody>
                             <CardFooter>
                                 <Skeleton className="rounded-lg" isLoaded={!loading}>
-                                    <Chip color="danger" variant="bordered">Rejected</Chip>
+                                    <Chip color="danger" variant="bordered">Closed</Chip>
                                 </Skeleton>
                             </CardFooter>
                         </Card>
@@ -194,7 +188,7 @@ const ClientRequests = ({ user }: { user: User }) => {
             ) : (
                 <>
                     {
-                        !loading && <p className="text-gray-500">No rejected requests found.</p>
+                        !loading && <p className="text-gray-500">No closed requests found.</p>
                     }
                 </>
             )}
@@ -206,8 +200,7 @@ const ClientRequests = ({ user }: { user: User }) => {
                             <ModalBody>
 
                                 <p>{selectedRequest?.description || "No description provided"}</p>
-                                <p className="text-sm">Submitted to: {selectedRequest?.provider_name}</p>
-                                <p className="text-red-400">Reason: {selectedRequest?.rejection_reason}</p>
+                                <p className="text-sm">Submitted by: {selectedRequest?.client_name}</p>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
