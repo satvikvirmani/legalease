@@ -1,8 +1,14 @@
 "use client"
 
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
+
 import { Form, Button, Input } from "@heroui/react";
 import { addToast } from "@heroui/toast";
+
+interface ValidationDetails {
+    typeMismatch: boolean;
+    // Add any other validation details that might be relevant
+}
 
 import Link from "next/link";
 
@@ -41,6 +47,7 @@ export default function Home() {
     return (
         <main className="w-full p-6 h-screen grid grid-cols-1 lg:grid-cols-2 lg:gap-4">
             <div className="hidden lg:block overflow-hidden rounded-2xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img alt="Background Image" src="/login.jpg" className="w-full" />
             </div>
             <div className="col-span-2 lg:col-span-1 flex flex-col justify-between items-center">
@@ -55,7 +62,7 @@ export default function Home() {
                     <div className="w-full max-w-sm flex flex-col items-start gap-8 mx-auto">
                         <Input
                             isRequired
-                            errorMessage={({ validationDetails, validationErrors }: { validationDetails: any, validationErrors: any }) =>
+                            errorMessage={({ validationDetails, validationErrors }: { validationDetails: ValidationDetails, validationErrors: string[] }) =>
                                 validationDetails.typeMismatch ? "Please enter a valid email address" : validationErrors
                             }
                             label="Email"
@@ -93,7 +100,7 @@ export default function Home() {
                     </div>
                 </Form>
                 <p className="text-sm">
-                    <span className="text-neutral-600">Don't have an account?{" "}</span>
+                    <span className="text-neutral-600">Don&apos;t have an account?{" "}</span>
                     <Link className="underline" href="/register" passHref>
                         Sign Up In
                     </Link>

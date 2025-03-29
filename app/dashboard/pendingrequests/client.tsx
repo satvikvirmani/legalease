@@ -4,7 +4,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import { Card, CardBody, CardFooter, CardHeader, Chip, Skeleton } from "@heroui/react";
 
 import { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import {
     Modal,
@@ -38,7 +38,7 @@ const ClientRequests = ({ user }: { user: User }) => {
 
     const supabase = createClient();
 
-    const fetchRequestCount = async () => {
+    const fetchRequestCount = useCallback(async () => {
         const { count, error } = await supabase
             .from("requests")
             .select("*", { count: "exact", head: true })
@@ -46,20 +46,20 @@ const ClientRequests = ({ user }: { user: User }) => {
             .eq("status", "pending");
 
         if (error) {
-                addToast({
-                    title: "Notification",
-                    description: error.message || "An unexpected error occurred",
-                    color: "danger",
-                    variant: "bordered",
-                    radius: "md"
-                })
+            addToast({
+                title: "Notification",
+                description: error.message || "An unexpected error occurred",
+                color: "danger",
+                variant: "bordered",
+                radius: "md"
+            });
             setError("Unable to fetch request count.");
             return;
         }
         setRequestCount(count || 0);
 
         setRequests(
-            Array(requestCount).fill(null).map((_, i) => ({
+            Array(requestCount || 0).fill(null).map((_, i) => ({
                 id: (i + 1).toString(),
                 description: `Sample request ${i + 1}`,
                 status: "rejected",
@@ -69,9 +69,9 @@ const ClientRequests = ({ user }: { user: User }) => {
                 rejection_reason: "Incomplete information",
             }))
         );
-    };
+    }, [supabase, user.id, requestCount]);
 
-    const fetchRequests = async () => {
+    const fetchRequests = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -89,38 +89,44 @@ const ClientRequests = ({ user }: { user: User }) => {
                     color: "danger",
                     variant: "bordered",
                     radius: "md"
-                })
-            } else if (!requestsData || requestsData.length === 0) {
+                });
+                return;
+            }
+
+            if (!requestsData || requestsData.length === 0) {
                 setRequests([]);
                 return;
-            } else if(requestsData && requestsData.length > 0) {
-                const providerIds = requestsData.map((req) => req.provider_id);
+            }
 
-                const { data: providerData, error: providerError } = await supabase
-                    .from("profiles")
-                    .select("user_id, first_name, last_name, rating")
-                    .in("user_id", providerIds);
+            const providerIds = requestsData.map((req) => req.provider_id);
 
-                if (providerError) {
-                    addToast({
-                        title: "Notification",
-                        description: providerError.message || "An unexpected error occurred",
-                        color: "danger",
-                        variant: "bordered",
-                        radius: "md"
-                    })
-                } else if (providerData) {
-                    const requestsWithProviderDetails = requestsData.map((req) => {
-                        const provider = providerData.find((p) => p.user_id === req.provider_id);
-                        return {
-                            ...req,
-                            provider_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Provider",
-                            rating: provider ? provider.rating : null,
-                        };
-                    });
+            const { data: providerData, error: providerError } = await supabase
+                .from("profiles")
+                .select("user_id, first_name, last_name, rating")
+                .in("user_id", providerIds);
 
-                    setRequests(requestsWithProviderDetails);
-                }
+            if (providerError) {
+                addToast({
+                    title: "Notification",
+                    description: providerError.message || "An unexpected error occurred",
+                    color: "danger",
+                    variant: "bordered",
+                    radius: "md"
+                });
+                return;
+            }
+
+            if (providerData) {
+                const requestsWithProviderDetails = requestsData.map((req) => {
+                    const provider = providerData.find((p) => p.user_id === req.provider_id);
+                    return {
+                        ...req,
+                        provider_name: provider ? `${provider.first_name} ${provider.last_name}` : "Unknown Provider",
+                        rating: provider ? provider.rating : null,
+                    };
+                });
+
+                setRequests(requestsWithProviderDetails);
             }
 
         } catch (error) {
@@ -135,14 +141,13 @@ const ClientRequests = ({ user }: { user: User }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user.id, supabase]);
 
     useEffect(() => {
         if (user) {
-            fetchRequests().then(() => {
-            });
+            fetchRequestCount().then(fetchRequests);
         }
-    }, [user]);
+    }, [user, fetchRequestCount, fetchRequests]);
 
     if (error) {
         return (
@@ -178,7 +183,7 @@ const ClientRequests = ({ user }: { user: User }) => {
                                     <p>{request.description || "No description provided"}</p>
                                 </Skeleton>
                                 <Skeleton className="rounded-lg" isLoaded={!loading}>
-                                    <p className="text-sm">Submitted to: {request.client_id}</p>
+                                    <p className="text-sm">Submitted to: {request.provider_name}</p>
                                 </Skeleton>
                             </CardBody>
                             <CardFooter>

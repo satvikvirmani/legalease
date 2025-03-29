@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/app/utils/supabase/client";
-import { Card, CardBody, CardFooter, CardHeader, Chip, Skeleton, Spinner } from "@heroui/react";
+import { Card, CardBody, CardFooter, CardHeader, Chip, Skeleton } from "@heroui/react";
 
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";

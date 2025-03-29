@@ -1,11 +1,11 @@
 "use client"
 
 import { createClient } from "@/app/utils/supabase/client";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Form, Input, Textarea } from "@heroui/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Form, Textarea } from "@heroui/react";
 import { addToast } from "@heroui/toast";
-import { useState } from "react";
+import React from "react";
 
-const RequestForm = ({ provider_id, client_id }: any) => {
+const RequestForm = ({ provider_id, client_id }: {provider_id: string, client_id: string}) => {
 
     const supabase = createClient();
 
@@ -36,6 +36,7 @@ const RequestForm = ({ provider_id, client_id }: any) => {
                 radius: "md"
             })
         } catch (error) {
+            console.error(error);
             addToast({
                 title: "Notification",
                 description: "Request submission failed",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {JSX, useEffect, useState, useCallback} from "react";
 import { createClient } from "@/app/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Card, Divider, Chip, Input, Button } from "@heroui/react";
@@ -29,9 +29,8 @@ const Chat = ({
 
     const supabase = createClient();
 
-    const fetchMessages = async () => {
+    const fetchMessages = useCallback(async () => {
         setLoading(true);
-
         try {
             const { data, error } = await supabase
                 .from("messages")
@@ -48,23 +47,15 @@ const Chat = ({
                     radius: "md",
                 });
             }
-
             setMessages(data || []);
         } catch (error) {
             console.error("Error fetching messages:", error);
-            addToast({
-                title: "Error",
-                description: "Failed to fetch requests. Please try again.",
-                color: "danger",
-                variant: "bordered",
-                radius: "md",
-            });
         } finally {
             setLoading(false);
         }
-    };
+    }, [requestId, supabase]);
 
-    const subscribeToMessages = () => {
+    const subscribeToMessages = useCallback(() => {
         return supabase
             .channel(`chat-${requestId}`)
             .on(
@@ -80,7 +71,16 @@ const Chat = ({
                 }
             )
             .subscribe();
-    };
+    }, [requestId, supabase]);
+
+    useEffect(() => {
+        fetchMessages().then(() => {});
+        const subscription = subscribeToMessages();
+
+        return () => {
+            supabase.removeChannel(subscription).then(() => {});
+        };
+    }, [fetchMessages, subscribeToMessages, supabase]);
 
     const sendMessage = async () => {
         if (!newMessage.trim()) return;
@@ -118,16 +118,6 @@ const Chat = ({
         }
     };
 
-    useEffect(() => {
-        fetchMessages().then(() => {});
-
-        const subscription = subscribeToMessages();
-
-        return () => {
-            supabase.removeChannel(subscription).then(() => {});
-        };
-    }, [requestId]);
-
     const formatDate = (dateString: string) => {
         const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
@@ -141,7 +131,7 @@ const Chat = ({
                 {loading ? (
                     <p>Loading messages...</p>
                 ) : messages.length > 0 ? (
-                    messages.reduce((acc: any[], message, index) => {
+                    messages.reduce((acc: JSX.Element[], message, index) => {
                         const messageDate = formatDate(message.created_at);
                         const prevMessageDate = index > 0 ? formatDate(messages[index - 1].created_at) : null;
 

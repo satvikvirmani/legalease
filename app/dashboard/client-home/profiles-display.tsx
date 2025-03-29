@@ -1,15 +1,28 @@
-import { Chip, CircularProgress, User } from "@heroui/react";
+import { Chip } from "@heroui/react";
 import { Card, CardHeader, CardBody, CardFooter } from "@heroui/card";
 import Link from "next/link";
+import Image from "next/image"
 
-const ProfilesDisplay = ({ data }: { data: any[] | null }) => {
+interface LegalProvider {
+    provider_id: string;
+    first_name: string;
+    last_name: string;
+    username: string;
+    profile_picture: string;
+    service_type: string;
+    description: string;
+    experience_years: number;
+    similarity: number;
+}
+
+const ProfilesDisplay = ({ data }: { data: LegalProvider[] | null }) => {
     if (!data) {
         return null;
     }
 
     return (
         <div className="grid grid-cols-3 w-full gap-8">
-            {data.map((provider: any, i) => (
+            {data.map((provider: LegalProvider, i) => (
                 <Link
                     key={i}
                     href={{
@@ -24,7 +37,7 @@ const ProfilesDisplay = ({ data }: { data: any[] | null }) => {
                     <Card className="p-4">
                         <CardHeader>
                             <div className="flex flex-row gap-4 items-center">
-                                <img src={provider.profile_picture} alt="" className="h-16 w-16 object-cover rounded-full" />
+                                <Image src={provider.profile_picture} alt="" width={64} height={64} className="h-16 w-16 object-cover rounded-full" />
                                 <div>
                                     <p>{provider.first_name + " " + provider.last_name}</p>
                                     <p className="text-sm">{provider.service_type}</p>

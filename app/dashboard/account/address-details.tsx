@@ -197,8 +197,6 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                     onValueChange={(value) => setAddress({ ...address!, street: value })}
                     isRequired
                     label="Street Address"
-                    // labelPlacement="outside"
-                    // placeholder="Enter your street address"
                     name='street'
                     className='w-full col-span-2'
                     variant='bordered'
@@ -210,9 +208,7 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                     isRequired
                     isDisabled={isLoading}
                     label="City"
-                    // labelPlacement="outside"
                     name="city"
-                    // placeholder="City Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -223,9 +219,7 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                     isRequired
                     isDisabled={isLoading}
                     label="State"
-                    // labelPlacement="outside"
                     name="state"
-                    // placeholder="State Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -236,9 +230,7 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                     isRequired
                     isDisabled={isLoading}
                     label="Pin-Code"
-                    // labelPlacement="outside"
                     name="pincode"
-                    // placeholder="Enter your Pincode"
                     className='w-full'
                     variant='bordered'
                     radius='md'
@@ -249,9 +241,7 @@ const AddressDetails = ({ user }: { user: User | null }) => {
                     isReadOnly
                     isDisabled={isLoading}
                     label="Country"
-                    // labelPlacement="outside"
                     name="country"
-                    // placeholder="Country Details"
                     className='w-full'
                     variant='bordered'
                     radius='md'
