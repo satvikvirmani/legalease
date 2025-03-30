@@ -7,10 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="10cc4003-29b3-4549-b3dd-a07b17107cc6" name="Changes" comment="fix: fixed linting errors">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api/generateEmbedding/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/generateEmbedding/route.ts" afterDir="false" />
-    </list>
+    <list default="true" id="10cc4003-29b3-4549-b3dd-a07b17107cc6" name="Changes" comment="security: fixed exposure of huggingface api key" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -159,7 +156,7 @@
       <workItem from="1743073667590" duration="18425000" />
       <workItem from="1743240514470" duration="3295000" />
       <workItem from="1743271319561" duration="576000" />
-      <workItem from="1743363276838" duration="2937000" />
+      <workItem from="1743363276838" duration="3294000" />
     </task>
     <task id="LOCAL-00001" summary="refactored code">
       <option name="closed" value="true" />
@@ -185,7 +182,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743365713084</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="security: fixed exposure of huggingface api key">
+      <option name="closed" value="true" />
+      <created>1743366346514</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743366346514</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -206,7 +211,8 @@
     <MESSAGE value="refactored code" />
     <MESSAGE value="refactor: fixed linting errors" />
     <MESSAGE value="fix: fixed linting errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: fixed linting errors" />
+    <MESSAGE value="security: fixed exposure of huggingface api key" />
+    <option name="LAST_COMMIT_MESSAGE" value="security: fixed exposure of huggingface api key" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

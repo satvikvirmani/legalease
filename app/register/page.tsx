@@ -3,7 +3,6 @@
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { Form, Input, Button, Select, SelectItem } from "@heroui/react";
 import { addToast } from "@heroui/toast";
-import Image from "next/image";
 
 import Link from "next/link";
 
@@ -158,11 +157,10 @@ export default function Home() {
                 </p>
             </div>
             <div className="hidden lg:block overflow-hidden rounded-2xl">
-                <Image
+                <img
                     alt="Background Image"
                     src="/login.jpg"
                     className="w-full"
-                    fill={true}
                 />
             </div>
         </main>
