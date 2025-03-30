@@ -42,7 +42,7 @@ const ClientRequests = ({ user }: { user: User }) => {
         const { count, error } = await supabase
             .from("requests")
             .select("*", { count: "exact", head: true })
-            .eq("provider_id", user.id)
+            .eq("client_id", user.id)
             .eq("status", "pending");
 
         if (error) {

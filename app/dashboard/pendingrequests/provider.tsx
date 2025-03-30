@@ -4,7 +4,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import { Card, CardHeader, CardBody, CardFooter, Chip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input, Form } from "@heroui/react";
 import { addToast } from "@heroui/toast";
 import { User } from "@supabase/supabase-js";
-import React, { useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 
 type Request = {
   id: string;
@@ -21,12 +21,47 @@ const ProviderRequests = ({ user }: { user: User }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
 
+  const [requestCount, setRequestCount] = useState<number | null>(null);
+
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { isOpen: isOpenRejection, onOpen: onOpenRejection, onOpenChange: onOpenChangeRejection } = useDisclosure();
 
   const supabase = createClient();
 
-  const fetchRequests = async () => {
+  const fetchRequestCount = useCallback(async () => {
+    const { count, error } = await supabase
+        .from("requests")
+        .select("*", { count: "exact", head: true })
+        .eq("provider_id", user.id)
+        .eq("status", "pending");
+
+    if (error) {
+      addToast({
+        title: "Notification",
+        description: error.message || "An unexpected error occurred",
+        color: "danger",
+        variant: "bordered",
+        radius: "md"
+      });
+      setError("Unable to fetch request count.");
+      return;
+    }
+    setRequestCount(count || 0);
+
+    setRequests(
+        Array(requestCount || 0).fill(null).map((_, i) => ({
+          id: (i + 1).toString(),
+          description: `Sample request ${i + 1}`,
+          approved: false,
+          provider_id: user.id,
+          client_name: "John Doe",
+          client_id: `client${i + 1}`
+        }))
+    );
+  }, [supabase, user.id, requestCount]);
+
+  const fetchRequests = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -88,14 +123,13 @@ const ProviderRequests = ({ user }: { user: User }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user.id, supabase])
 
   useEffect(() => {
     if (user) {
-      fetchRequests().then(() => {
-      });
+      fetchRequestCount().then(fetchRequests);
     }
-  }, [user]);
+  }, [user, fetchRequestCount, fetchRequests]);
 
   const handleAction = async (
     e: React.FormEvent<HTMLFormElement>,

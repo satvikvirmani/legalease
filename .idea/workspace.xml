@@ -7,7 +7,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="10cc4003-29b3-4549-b3dd-a07b17107cc6" name="Changes" comment="refactor: fixed linting errors" />
+    <list default="true" id="10cc4003-29b3-4549-b3dd-a07b17107cc6" name="Changes" comment="added webstorm config">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/approvedrequests/client.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/approvedrequests/client.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/approvedrequests/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/approvedrequests/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/closedrequests/client.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/closedrequests/client.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/closedrequests/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/closedrequests/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/pendingrequests/client.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/pendingrequests/client.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/pendingrequests/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/pendingrequests/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/profile/[slug]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/profile/[slug]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/provider-home/provider-home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/provider-home/provider-home.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/provider-home/request-status-chart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/provider-home/request-status-chart.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/rejectedrequests/client.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/rejectedrequests/client.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/dashboard/rejectedrequests/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/rejectedrequests/provider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/register/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/register/page.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,7 +37,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="supabase" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -67,6 +81,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/satvik/WebstormProjects/legalease/app/dashboard&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -78,7 +93,7 @@
     &quot;npm.lint.executor&quot;: &quot;Run&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMConfigurable&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/satvik/WebstormProjects/legalease/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -128,6 +143,9 @@
       <list>
         <item itemvalue="npm.build" />
         <item itemvalue="npm.lint" />
+        <item itemvalue="npm.lint" />
+        <item itemvalue="npm.build" />
+        <item itemvalue="npm.build" />
       </list>
     </recent_temporary>
   </component>
@@ -152,6 +170,7 @@
       <workItem from="1743073667590" duration="18425000" />
       <workItem from="1743240514470" duration="3295000" />
       <workItem from="1743271319561" duration="576000" />
+      <workItem from="1743363276838" duration="2057000" />
     </task>
     <task id="LOCAL-00001" summary="refactored code">
       <option name="closed" value="true" />

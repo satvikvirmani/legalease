@@ -4,7 +4,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import { Card, CardBody, CardFooter, CardHeader, Chip, Skeleton } from "@heroui/react";
 
 import { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 
 import {
     Modal,
@@ -38,7 +38,7 @@ const ClientRequests = ({ user }: { user: User }) => {
 
     const supabase = createClient();
 
-    const fetchRequestCount = async () => {
+    const fetchRequestCount = useCallback(async () => {
         const { count, error } = await supabase
             .from("requests")
             .select("*", { count: "exact", head: true })
@@ -69,9 +69,9 @@ const ClientRequests = ({ user }: { user: User }) => {
                 rejection_reason: "Incomplete information",
             }))
         );
-    };
+    }, [supabase, user.id, requestCount])
 
-    const fetchRequests = async () => {
+    const fetchRequests = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -135,13 +135,13 @@ const ClientRequests = ({ user }: { user: User }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user.id, supabase]);
 
     useEffect(() => {
         if (user) {
             fetchRequestCount().then(fetchRequests);
         }
-    }, [user]);
+    }, [user, fetchRequestCount, fetchRequests]);
 
     if (error) {
         return (

@@ -2,7 +2,7 @@
 
 import { createClient } from "@/app/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import Chat from "./chat";
 import { Card, CardHeader, CardBody, CardFooter, Chip, useDisclosure, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import {addToast} from "@heroui/toast";
@@ -27,7 +27,41 @@ const ProviderRequests = ({ user }: { user: User }) => {
 
   const supabase = createClient();
 
-  const fetchRequests = async () => {
+  const [requestCount, setRequestCount] = useState<number | null>(null);
+
+  const fetchRequestCount = useCallback(async () => {
+    const { count, error } = await supabase
+        .from("requests")
+        .select("*", { count: "exact", head: true })
+        .eq("provider_id", user.id)
+        .eq("status", "pending");
+
+    if (error) {
+      addToast({
+        title: "Notification",
+        description: error.message || "An unexpected error occurred",
+        color: "danger",
+        variant: "bordered",
+        radius: "md"
+      })
+      setError("Unable to fetch request count.");
+      return;
+    }
+    setRequestCount(count || 0);
+
+    setRequests(
+        Array(requestCount).fill(null).map((_, i) => ({
+          id: (i + 1).toString(),
+          description: `Sample request ${i + 1}`,
+          provider_id: user.id,
+          provider_name: "John Doe",
+          client_id: `client${i + 1}`,
+          client_name: "John Doe",
+        }))
+    );
+  }, [supabase, user.id, requestCount])
+
+  const fetchRequests = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -89,14 +123,14 @@ const ProviderRequests = ({ user }: { user: User }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [supabase, user.id]);
 
   useEffect(() => {
     if (user) {
       fetchRequests().then(() => {
       });
     }
-  }, [user]);
+  }, [user, fetchRequests, fetchRequestCount]);
 
   if (loading) {
     return <div className="text-center py-6">Loading approved requests...</div>;

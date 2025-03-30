@@ -5,7 +5,7 @@ import { Card, CardBody, CardFooter, CardHeader, Chip } from "@heroui/react";
 import Chat from "@/app/dashboard/approvedrequests/chat";
 
 import { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 
 import {
     Modal,
@@ -37,9 +37,44 @@ const ClientRequests = ({ user }: { user: User }) => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onOpenChange: onConfirmChange } = useDisclosure();
 
+    const [requestCount, setRequestCount] = useState<number | null>(null);
+
     const supabase = createClient();
 
-    const fetchRequests = async () => {
+    const fetchRequestCount = useCallback(async () => {
+        const { count, error } = await supabase
+            .from("requests")
+            .select("*", { count: "exact", head: true })
+            .eq("client_id", user.id)
+            .eq("status", "pending");
+
+        if (error) {
+            addToast({
+                title: "Notification",
+                description: error.message || "An unexpected error occurred",
+                color: "danger",
+                variant: "bordered",
+                radius: "md"
+            })
+            setError("Unable to fetch request count.");
+            return;
+        }
+        setRequestCount(count || 0);
+
+        setRequests(
+            Array(requestCount).fill(null).map((_, i) => ({
+                id: (i + 1).toString(),
+                description: `Sample request ${i + 1}`,
+                status: "rejected",
+                provider_id: user.id,
+                client_name: "John Doe",
+                client_id: `client${i + 1}`,
+                rejection_reason: "Incomplete information",
+            }))
+        );
+    }, [supabase, user.id, requestCount])
+
+    const fetchRequests = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -103,14 +138,14 @@ const ClientRequests = ({ user }: { user: User }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [supabase, user.id]);
 
     useEffect(() => {
         if (user) {
             fetchRequests().then(() => {
             });
         }
-    }, [user]);
+    }, [user, fetchRequests, fetchRequestCount]);
 
     const handleCloseRequest = async () => {
         if (!selectedRequest) return;

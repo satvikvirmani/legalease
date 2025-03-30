@@ -9,7 +9,7 @@ interface SocialLink {
     url: string;
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
     const supabase = await createClient();
     const { slug } = await params;
 
