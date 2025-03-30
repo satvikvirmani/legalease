@@ -7,20 +7,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="10cc4003-29b3-4549-b3dd-a07b17107cc6" name="Changes" comment="added webstorm config">
+    <list default="true" id="10cc4003-29b3-4549-b3dd-a07b17107cc6" name="Changes" comment="fix: fixed linting errors">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/approvedrequests/client.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/approvedrequests/client.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/approvedrequests/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/approvedrequests/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/closedrequests/client.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/closedrequests/client.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/closedrequests/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/closedrequests/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/pendingrequests/client.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/pendingrequests/client.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/pendingrequests/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/pendingrequests/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/profile/[slug]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/profile/[slug]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/provider-home/provider-home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/provider-home/provider-home.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/provider-home/request-status-chart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/provider-home/request-status-chart.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/rejectedrequests/client.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/rejectedrequests/client.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dashboard/rejectedrequests/provider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/dashboard/rejectedrequests/provider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/register/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/register/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api/generateEmbedding/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/api/generateEmbedding/route.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +91,7 @@
       <recent name="$PROJECT_DIR$/app/dashboard" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.build">
+  <component name="RunManager" selected="Node.js.dev">
     <configuration name="dev" type="NodeJSConfigurationType" working-dir="$PROJECT_DIR$">
       <EXTENSION ID="com.intellij.lang.javascript.buildTools.npm.rc.StartBrowserRunConfigurationExtension">
         <browser name="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" start="true" url="http://localhost:3000" />
@@ -170,7 +159,7 @@
       <workItem from="1743073667590" duration="18425000" />
       <workItem from="1743240514470" duration="3295000" />
       <workItem from="1743271319561" duration="576000" />
-      <workItem from="1743363276838" duration="2057000" />
+      <workItem from="1743363276838" duration="2937000" />
     </task>
     <task id="LOCAL-00001" summary="refactored code">
       <option name="closed" value="true" />
@@ -188,7 +177,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743240706579</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="fix: fixed linting errors">
+      <option name="closed" value="true" />
+      <created>1743365713084</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1743365713084</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -208,7 +205,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="refactored code" />
     <MESSAGE value="refactor: fixed linting errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: fixed linting errors" />
+    <MESSAGE value="fix: fixed linting errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: fixed linting errors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

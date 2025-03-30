@@ -1,10 +1,10 @@
 import {FeatureExtractionOutput, HfInference} from '@huggingface/inference';
 
-const hf = new HfInference(process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY);
+const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export async function POST(request: Request): Promise<Response> {
     try {
-        if (!process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY) {
+        if (!process.env.HUGGINGFACE_API_KEY) {
             return new Response(JSON.stringify({ error: 'Missing API Key' }), {
                 status: 500,
                 headers: { 'Content-Type': 'application/json' },
