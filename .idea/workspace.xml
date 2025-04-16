@@ -7,7 +7,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="10cc4003-29b3-4549-b3dd-a07b17107cc6" name="Changes" comment="security: fixed exposure of huggingface api key" />
+    <list default="true" id="10cc4003-29b3-4549-b3dd-a07b17107cc6" name="Changes" comment="security: fixed exposure of huggingface api key">
+      <change beforePath="$PROJECT_DIR$/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/login/page.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -157,6 +159,7 @@
       <workItem from="1743240514470" duration="3295000" />
       <workItem from="1743271319561" duration="576000" />
       <workItem from="1743363276838" duration="3294000" />
+      <workItem from="1744793839217" duration="15000" />
     </task>
     <task id="LOCAL-00001" summary="refactored code">
       <option name="closed" value="true" />

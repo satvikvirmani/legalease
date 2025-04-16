@@ -102,7 +102,7 @@ export default function Home() {
                 <p className="text-sm">
                     <span className="text-neutral-600">Don&apos;t have an account?{" "}</span>
                     <Link className="underline" href="/register" passHref>
-                        Sign Up In
+                        Sign Up
                     </Link>
                 </p>
             </div>
