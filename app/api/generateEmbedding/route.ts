@@ -1,8 +1,9 @@
 import {FeatureExtractionOutput, HfInference} from '@huggingface/inference';
 
-const hf = new HfInference(process.env.HUGGINGFACE_API_KEY, {
-    apiUrl: "https://router.huggingface.co/hf-inference"
-});
+const hf = new HfInference(
+  "https://router.huggingface.co/hf-inference",
+  process.env.HUGGINGFACE_API_KEY
+);
 
 export async function POST(request: Request): Promise<Response> {
     try {
