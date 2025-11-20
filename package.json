@@ -14,7 +14,7 @@
     "@heroui/system": "^2.4.11",
     "@heroui/theme": "^2.4.11",
     "@heroui/toast": "^2.0.5",
-    "@huggingface/inference": "^2.8.1",
+    "@huggingface/inference": "^4.13.3",
     "@radix-ui/react-slot": "^1.1.2",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.10",

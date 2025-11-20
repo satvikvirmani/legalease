@@ -1,9 +1,6 @@
-import {FeatureExtractionOutput, HfInference} from '@huggingface/inference';
+import { InferenceClient } from "@huggingface/inference";
 
-const hf = new HfInference(
-  "https://router.huggingface.co/hf-inference",
-  process.env.HUGGINGFACE_API_KEY
-);
+const hf = new InferenceClient(process.env.HUGGINGFACE_API_KEY,);
 
 export async function POST(request: Request): Promise<Response> {
     try {
@@ -24,7 +21,7 @@ export async function POST(request: Request): Promise<Response> {
             });
         }
 
-        const response: FeatureExtractionOutput = await hf.featureExtraction({
+        const response = await hf.featureExtraction({
             model: 'sentence-transformers/all-MiniLM-L6-v2',
             inputs: description.trim(),
         });
