@@ -219,15 +219,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## Author
-
-**Satvik Virmani**
-
-- GitHub: [@satvikvirmani](https://github.com/satvikvirmani)
-- Project Link: [https://github.com/satvikvirmani/legalease](https://github.com/satvikvirmani/legalease)
-
----
-
 ## Acknowledgments
 
 - [Next.js](https://nextjs.org/) - The React framework for production
@@ -247,7 +238,5 @@ If you encounter any issues or have questions, please [open an issue](https://gi
 <div align="center">
 
 ### Star this repository if you find it helpful!
-
-Made with ❤️ by Satvik Virmani
 
 </div>
